@@ -276,15 +276,6 @@ Este endpoint:
 
 - Busca empréstimos com `dueDate < hoje` e `status = ACTIVE`
 - Atualiza o status para `OVERDUE`
-- Adiciona à fila de notificações (usando LinkedList)
-
-#### Obter Notificações de Empréstimos em Atraso
-
-```http
-GET /api/loans/overdue-notifications
-```
-
-Retorna a lista de empréstimos em atraso da fila de notificações (estrutura LinkedList).
 
 #### Listar Todos os Empréstimos
 
@@ -437,4 +428,4 @@ curl -X PUT http://localhost:8080/api/loans/1/return
 
 ## Estrutura de Dados Aplicada
 
-A estrutura de dados **LinkedList** (lista duplamente encadeada) é utilizada no serviço `NotificationService` para gerenciar a fila de notificações de empréstimos em atraso. Isso demonstra a aplicação prática das estruturas de dados estudadas no curso.
+O sistema implementa uma **Fila de Reservas** para gerenciar reservas de livros, onde cada livro pode ter até 5 reservas ordenadas. Quando uma reserva é cancelada ou efetivada, a fila é reorganizada automaticamente, demonstrando a aplicação prática de estruturas de dados.

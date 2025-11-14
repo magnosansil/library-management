@@ -31,11 +31,26 @@ Este arquivo centraliza todas as rotas da API para fácil referência e manuten�
 | GET    | `/api/loans/books/{isbn}/availability`       | `LoanController.checkBookAvailability()`    | Verificar disponibilidade antes de emprestar                                        |
 | GET    | `/api/loans/students/{matricula}/can-borrow` | `LoanController.canStudentBorrow()`         | Verificar se aluno pode emprestar                                                   |
 | GET    | `/api/loans/check-overdue`                   | `LoanController.checkOverdueLoans()`        | Verificar e atualizar empréstimos em atraso                                         |
-| GET    | `/api/loans/overdue-notifications`           | `LoanController.getOverdueNotifications()`  | Notificações de empréstimos em atraso                                               |
 | POST   | `/api/loans`                                 | `LoanController.createLoan()`               | Criar novo empréstimo                                                               |
 | PUT    | `/api/loans/{loanId}/return`                 | `LoanController.returnLoan()`               | Registrar devolução de livro (calcula multa automaticamente, data opcional no body) |
 
 **Controller:** `com.biblioteca.controller.LoanController`
+
+---
+
+## 📋 Reservas (`/api/reservations`)
+
+| Método | Rota                                    | Handler                                            | Descrição                                                        |
+| ------ | --------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------- |
+| GET    | `/api/reservations`                     | `ReservationController.getAllReservations()`       | Listar todas as reservas                                         |
+| GET    | `/api/reservations/{id}`                | `ReservationController.getReservationById()`       | Buscar reserva por ID                                            |
+| GET    | `/api/reservations/book/{isbn}`         | `ReservationController.getReservationsByBook()`    | Listar reservas ativas de um livro (ordem da fila)               |
+| GET    | `/api/reservations/student/{matricula}` | `ReservationController.getReservationsByStudent()` | Listar reservas ativas de um estudante                           |
+| POST   | `/api/reservations`                     | `ReservationController.createReservation()`        | Criar nova reserva (máximo 5 por livro, fila ordenada)           |
+| DELETE | `/api/reservations/{id}`                | `ReservationController.cancelReservation()`        | Cancelar reserva (reorganiza fila automaticamente)               |
+| PUT    | `/api/reservations/{id}/fulfill`        | `ReservationController.fulfillReservation()`       | Efetivar reserva (marcar como gerou empréstimo, reorganiza fila) |
+
+**Controller:** `com.biblioteca.controller.ReservationController`
 
 ---
 
@@ -89,7 +104,7 @@ Este arquivo centraliza todas as rotas da API para fácil referência e manuten�
 
 ## 📝 Estrutura de Dados Aplicada
 
-- **LinkedList** (lista duplamente encadeada) - Usada em `NotificationService` para gerenciar fila de notificações de empréstimos em atraso
+- **Fila de Reservas** - Sistema de reservas implementa uma fila ordenada com máximo de 5 posições por livro
 
 ---
 
@@ -121,9 +136,21 @@ GET    /api/loans/active/student/{matricula}   → getActiveLoansByStudent(Strin
 GET    /api/loans/books/{isbn}/availability    → checkBookAvailability(String isbn)
 GET    /api/loans/students/{matricula}/can-borrow → canStudentBorrow(String matricula)
 GET    /api/loans/check-overdue                 → checkOverdueLoans()
-GET    /api/loans/overdue-notifications         → getOverdueNotifications()
 POST   /api/loans                               → createLoan(@RequestBody LoanRequestDTO request)
 PUT    /api/loans/{loanId}/return               → returnLoan(Long loanId, LoanReturnDTO returnDTO) // Calcula multa automaticamente, data opcional
+```
+
+### Reservas
+
+```java
+// Controller: ReservationController
+GET    /api/reservations                        → getAllReservations()
+GET    /api/reservations/{id}                   → getReservationById(Long id)
+GET    /api/reservations/book/{isbn}             → getReservationsByBook(String isbn)
+GET    /api/reservations/student/{matricula}     → getReservationsByStudent(String matricula)
+POST   /api/reservations                         → createReservation(@RequestBody ReservationRequestDTO request)
+DELETE /api/reservations/{id}                    → cancelReservation(Long id) // Reorganiza fila
+PUT    /api/reservations/{id}/fulfill            → fulfillReservation(Long id) // Marca como efetivada, reorganiza fila
 ```
 
 ### Alunos
@@ -160,10 +187,11 @@ GET /api/health → health()
 
 ## 📋 Resumo Rápido
 
-**Total de Rotas:** 28
+**Total de Rotas:** 27
 
 - **Livros:** 7 rotas
-- **Empréstimos:** 12 rotas
+- **Empréstimos:** 11 rotas
+- **Reservas:** 7 rotas
 - **Alunos:** 6 rotas
 - **Configurações:** 2 rotas
 - **Sistema:** 3 rotas

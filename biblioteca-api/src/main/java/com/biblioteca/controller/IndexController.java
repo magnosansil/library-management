@@ -30,7 +30,6 @@ public class IndexController {
     endpoints.put("books", "/api/books");
     endpoints.put("loans", "/api/loans");
     endpoints.put("active_loans", "/api/loans/active");
-    endpoints.put("overdue_notifications", "/api/loans/overdue-notifications");
 
     info.put("endpoints", endpoints);
     info.put("documentation", "Veja ROUTES.md para todas as rotas centralizadas");

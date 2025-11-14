@@ -9,16 +9,16 @@ API REST para gerenciamento de biblioteca desenvolvida em Java com Spring Boot. 
 - ✅ Verificar disponibilidade de livro antes de emprestar (READ)
 - ✅ Atualizar estoque automaticamente
 - ✅ Limitar número máximo de empréstimo simultâneo por aluno
-- ✅ Notificar bibliotecário sobre empréstimos em atraso
 - ✅ Gerar relatório de empréstimos por status (ACTIVE, OVERDUE, RETURNED)
 - ✅ Registrar devolução de livro com cálculo automático de multa
 - ✅ Registrar novo empréstimo de livro
 - ✅ Atualização automática de status baseada em datas
 - ✅ Sistema de multas configurável (multa por dia de atraso)
+- ✅ Sistema de reservas com fila ordenada (máximo 5 por livro)
 
 ## 🏗️ Estruturas de Dados Aplicadas
 
-Este projeto utiliza a estrutura de dados **LinkedList** (lista duplamente encadeada) do repositório de estruturas de dados para gerenciar a fila de notificações de empréstimos em atraso no serviço `NotificationService`.
+Este projeto implementa uma **Fila de Reservas** para gerenciar reservas de livros, onde cada livro pode ter até 5 reservas ordenadas. Quando uma reserva é cancelada ou efetivada, a fila é reorganizada automaticamente.
 
 ## 🛠️ Tecnologias
 
@@ -218,9 +218,20 @@ A API estará disponível em: `http://localhost:8080`
 | GET    | `/api/loans/books/{isbn}/availability`       | Verificar disponibilidade de livro                  |
 | GET    | `/api/loans/students/{matricula}/can-borrow` | Verificar se aluno pode emprestar                   |
 | GET    | `/api/loans/check-overdue`                   | Verificar e atualizar empréstimos em atraso         |
-| GET    | `/api/loans/overdue-notifications`           | Obter notificações de empréstimos em atraso         |
 | POST   | `/api/loans`                                 | Criar novo empréstimo                               |
 | PUT    | `/api/loans/{loanId}/return`                 | Registrar devolução (calcula multa automaticamente) |
+
+### Reservas
+
+| Método | Endpoint                                | Descrição                                          |
+| ------ | --------------------------------------- | -------------------------------------------------- |
+| GET    | `/api/reservations`                     | Listar todas as reservas                           |
+| GET    | `/api/reservations/{id}`                | Buscar reserva por ID                              |
+| GET    | `/api/reservations/book/{isbn}`         | Listar reservas ativas de um livro (ordem da fila) |
+| GET    | `/api/reservations/student/{matricula}` | Listar reservas ativas de um estudante             |
+| POST   | `/api/reservations`                     | Criar nova reserva (máximo 5 por livro)            |
+| DELETE | `/api/reservations/{id}`                | Cancelar reserva (reorganiza fila)                 |
+| PUT    | `/api/reservations/{id}/fulfill`        | Efetivar reserva (marcar como gerou empréstimo)    |
 
 ### Livros
 

@@ -78,9 +78,6 @@ public class RoutesController {
     loanRoutes.put("GET /api/loans/check-overdue", Map.of(
         "description", "Verificar e atualizar empréstimos em atraso",
         "handler", "LoanController.checkOverdueLoans()"));
-    loanRoutes.put("GET /api/loans/overdue-notifications", Map.of(
-        "description", "Notificações de empréstimos em atraso (usa LinkedList)",
-        "handler", "LoanController.getOverdueNotifications()"));
     loanRoutes.put("POST /api/loans", Map.of(
         "description", "Criar novo empréstimo",
         "handler", "LoanController.createLoan(@RequestBody LoanRequestDTO request)",

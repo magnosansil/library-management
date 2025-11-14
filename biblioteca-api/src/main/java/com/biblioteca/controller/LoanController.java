@@ -118,16 +118,6 @@ public class LoanController {
   }
 
   /**
-   * Notificar bibliotecário sobre empréstimos em atraso
-   * GET /api/loans/overdue-notifications
-   */
-  @GetMapping("/overdue-notifications")
-  public ResponseEntity<List<LoanResponseDTO>> getOverdueNotifications() {
-    List<LoanResponseDTO> notifications = loanService.getOverdueNotifications();
-    return ResponseEntity.ok(notifications);
-  }
-
-  /**
    * Obter todos os empréstimos
    * GET /api/loans
    */

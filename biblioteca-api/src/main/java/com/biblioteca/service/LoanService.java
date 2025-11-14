@@ -23,19 +23,16 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final BookRepository bookRepository;
     private final StudentRepository studentRepository;
-    private final NotificationService notificationService;
     private final LibrarySettingsService settingsService;
 
     @Autowired
     public LoanService(LoanRepository loanRepository,
             BookRepository bookRepository,
             StudentRepository studentRepository,
-            NotificationService notificationService,
             LibrarySettingsService settingsService) {
         this.loanRepository = loanRepository;
         this.bookRepository = bookRepository;
         this.studentRepository = studentRepository;
-        this.notificationService = notificationService;
         this.settingsService = settingsService;
     }
 
@@ -73,12 +70,6 @@ public class LoanService {
         if (currentStatus != newStatus) {
             loan.setStatus(newStatus);
             loanRepository.save(loan);
-
-            // Se mudou para OVERDUE, adicionar notificação
-            if (newStatus == Loan.LoanStatus.OVERDUE) {
-                notificationService.addOverdueNotification(loan);
-            }
-
             return true;
         }
 
@@ -303,16 +294,6 @@ public class LoanService {
                 .filter(loan -> loan.getStatus() == Loan.LoanStatus.OVERDUE)
                 .collect(Collectors.toList());
 
-        return overdueLoans.stream()
-                .map(LoanResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Obtém notificações de empréstimos em atraso
-     */
-    public List<LoanResponseDTO> getOverdueNotifications() {
-        List<Loan> overdueLoans = notificationService.getAllNotifications();
         return overdueLoans.stream()
                 .map(LoanResponseDTO::fromEntity)
                 .collect(Collectors.toList());

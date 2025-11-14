@@ -251,6 +251,16 @@ Ou verifique os logs completos no console.
 - `PUT /api/loans/{loanId}/return` - Devolver livro (calcula multa automaticamente)
   - Body opcional: `{"returnDate": "2024-01-20T14:30:00"}`
 
+### Reservas
+
+- `GET /api/reservations` - Listar todas as reservas
+- `GET /api/reservations/{id}` - Buscar reserva por ID
+- `GET /api/reservations/book/{isbn}` - Reservas ativas de um livro (ordem da fila)
+- `GET /api/reservations/student/{matricula}` - Reservas ativas de um estudante
+- `POST /api/reservations` - Criar reserva (máximo 5 por livro)
+- `DELETE /api/reservations/{id}` - Cancelar reserva (reorganiza fila)
+- `PUT /api/reservations/{id}/fulfill` - Efetivar reserva (marcar como gerou empréstimo)
+
 ### Configurações
 
 - `GET /api/settings` - Obter configurações globais
