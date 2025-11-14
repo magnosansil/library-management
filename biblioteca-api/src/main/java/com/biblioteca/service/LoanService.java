@@ -329,4 +329,56 @@ public class LoanService {
                 .map(LoanResponseDTO::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Obtém apenas empréstimos com status OVERDUE
+     * Atualiza status automaticamente antes de retornar
+     */
+    public List<LoanResponseDTO> getOverdueLoans() {
+        List<Loan> allLoans = loanRepository.findAll();
+        updateLoansStatus(allLoans);
+
+        List<Loan> overdueLoans = allLoans.stream()
+                .filter(loan -> loan.getStatus() == Loan.LoanStatus.OVERDUE)
+                .collect(Collectors.toList());
+
+        return overdueLoans.stream()
+                .map(LoanResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtém apenas empréstimos com status RETURNED
+     * Atualiza status automaticamente antes de retornar
+     */
+    public List<LoanResponseDTO> getReturnedLoans() {
+        List<Loan> allLoans = loanRepository.findAll();
+        updateLoansStatus(allLoans);
+
+        List<Loan> returnedLoans = allLoans.stream()
+                .filter(loan -> loan.getStatus() == Loan.LoanStatus.RETURNED)
+                .collect(Collectors.toList());
+
+        return returnedLoans.stream()
+                .map(LoanResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtém empréstimos com status ACTIVE e OVERDUE juntos
+     * Atualiza status automaticamente antes de retornar
+     */
+    public List<LoanResponseDTO> getActiveAndOverdueLoans() {
+        List<Loan> allLoans = loanRepository.findAll();
+        updateLoansStatus(allLoans);
+
+        List<Loan> activeAndOverdueLoans = allLoans.stream()
+                .filter(loan -> loan.getStatus() == Loan.LoanStatus.ACTIVE
+                        || loan.getStatus() == Loan.LoanStatus.OVERDUE)
+                .collect(Collectors.toList());
+
+        return activeAndOverdueLoans.stream()
+                .map(LoanResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

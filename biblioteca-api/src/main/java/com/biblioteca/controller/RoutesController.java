@@ -57,6 +57,15 @@ public class RoutesController {
     loanRoutes.put("GET /api/loans/active", Map.of(
         "description", "Listar empréstimos ativos",
         "handler", "LoanController.getActiveLoans()"));
+    loanRoutes.put("GET /api/loans/overdue", Map.of(
+        "description", "Listar empréstimos em atraso (status OVERDUE)",
+        "handler", "LoanController.getOverdueLoans()"));
+    loanRoutes.put("GET /api/loans/returned", Map.of(
+        "description", "Listar empréstimos devolvidos (status RETURNED)",
+        "handler", "LoanController.getReturnedLoans()"));
+    loanRoutes.put("GET /api/loans/active-and-overdue", Map.of(
+        "description", "Listar empréstimos ativos e em atraso juntos (status ACTIVE e OVERDUE)",
+        "handler", "LoanController.getActiveAndOverdueLoans()"));
     loanRoutes.put("GET /api/loans/active/student/{matricula}", Map.of(
         "description", "Empréstimos ativos de um aluno",
         "handler", "LoanController.getActiveLoansByStudent(String matricula)"));

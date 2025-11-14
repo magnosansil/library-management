@@ -136,4 +136,34 @@ public class LoanController {
     List<LoanResponseDTO> loans = loanService.getAllLoans();
     return ResponseEntity.ok(loans);
   }
+
+  /**
+   * Obter apenas empréstimos com status OVERDUE
+   * GET /api/loans/overdue
+   */
+  @GetMapping("/overdue")
+  public ResponseEntity<List<LoanResponseDTO>> getOverdueLoans() {
+    List<LoanResponseDTO> loans = loanService.getOverdueLoans();
+    return ResponseEntity.ok(loans);
+  }
+
+  /**
+   * Obter apenas empréstimos com status RETURNED
+   * GET /api/loans/returned
+   */
+  @GetMapping("/returned")
+  public ResponseEntity<List<LoanResponseDTO>> getReturnedLoans() {
+    List<LoanResponseDTO> loans = loanService.getReturnedLoans();
+    return ResponseEntity.ok(loans);
+  }
+
+  /**
+   * Obter empréstimos com status ACTIVE e OVERDUE juntos
+   * GET /api/loans/active-and-overdue
+   */
+  @GetMapping("/active-and-overdue")
+  public ResponseEntity<List<LoanResponseDTO>> getActiveAndOverdueLoans() {
+    List<LoanResponseDTO> loans = loanService.getActiveAndOverdueLoans();
+    return ResponseEntity.ok(loans);
+  }
 }
