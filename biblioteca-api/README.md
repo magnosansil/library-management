@@ -15,6 +15,7 @@ API REST para gerenciamento de biblioteca desenvolvida em Java com Spring Boot. 
 - ✅ Atualização automática de status baseada em datas
 - ✅ Sistema de multas configurável (multa por dia de atraso)
 - ✅ Sistema de reservas com fila ordenada (máximo 5 por livro)
+- ✅ Sistema de notificações por e-mail (livros em atraso e reservas disponíveis)
 
 ## 🏗️ Estruturas de Dados Aplicadas
 
@@ -87,9 +88,17 @@ Crie um arquivo `.env` na raiz do projeto (baseado em `.env.example`):
 DATABASE_URL=jdbc:postgresql://seu-host:5432/seu-db?sslmode=require
 DB_USERNAME=usuario
 DB_PASSWORD=senha
+
+# Configurações de E-mail (opcional - necessário para notificações)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=seu-email@gmail.com
+MAIL_PASSWORD=senha-de-app
 ```
 
 **⚠️ IMPORTANTE**: O arquivo `.env` está no `.gitignore` e NÃO deve ser commitado!
+
+**📧 Nota sobre E-mail:** Para usar notificações por e-mail, configure as credenciais SMTP. Para Gmail, use uma Senha de App (não a senha normal). Veja mais detalhes na seção de notificações.
 
 ### 3. Configurar Prisma ORM (Opcional - para gerenciamento de schema)
 
@@ -233,6 +242,13 @@ A API estará disponível em: `http://localhost:8080`
 | DELETE | `/api/reservations/{id}`                | Cancelar reserva (reorganiza fila)                 |
 | PUT    | `/api/reservations/{id}/fulfill`        | Efetivar reserva (marcar como gerou empréstimo)    |
 
+### Notificações
+
+| Método | Endpoint                                   | Descrição                                           |
+| ------ | ------------------------------------------ | --------------------------------------------------- |
+| POST   | `/api/notifications/overdue`               | Enviar notificação de livro em atraso por e-mail    |
+| POST   | `/api/notifications/reservation-available` | Enviar notificação de reserva disponível por e-mail |
+
 ### Livros
 
 | Método | Endpoint                           | Descrição                           |
@@ -321,6 +337,22 @@ curl -X DELETE http://localhost:8080/api/reservations/1
 curl -X PUT http://localhost:8080/api/reservations/1/fulfill
 ```
 
+### Enviar Notificação de Livro em Atraso
+
+```bash
+curl -X POST http://localhost:8080/api/notifications/overdue \
+  -H "Content-Type: application/json" \
+  -d '{"loanId": 1}'
+```
+
+### Enviar Notificação de Reserva Disponível
+
+```bash
+curl -X POST http://localhost:8080/api/notifications/reservation-available \
+  -H "Content-Type: application/json" \
+  -d '{"reservationId": 1}'
+```
+
 ## 🗄️ Estrutura do Banco de Dados
 
 ### Tabela: `books`
@@ -341,6 +373,8 @@ curl -X PUT http://localhost:8080/api/reservations/1/fulfill
 - `nome` (VARCHAR, NOT NULL)
 - `cpf` (VARCHAR, UNIQUE, NOT NULL)
 - `data_nascimento` (DATE, NOT NULL)
+- `email` (VARCHAR, UNIQUE, NOT NULL) - E-mail para notificações
+- `telefone` (VARCHAR, opcional) - Telefone de contato
 - `reservations_count` (INTEGER, NOT NULL, padrão: 0) - Total de reservas registradas
 
 ### Tabela: `loans`
@@ -408,6 +442,18 @@ npx prisma generate
 ### Usando cURL
 
 ```bash
+# Criar estudante com e-mail
+curl -X POST http://localhost:8080/api/students \
+  -H "Content-Type: application/json" \
+  -d '{
+    "matricula": "2024001",
+    "nome": "João Silva",
+    "cpf": "12345678901",
+    "dataNascimento": "2000-05-15",
+    "email": "joao.silva@exemplo.com",
+    "telefone": "(11) 99999-1111"
+  }'
+
 # Criar empréstimo
 curl -X POST http://localhost:8080/api/loans \
   -H "Content-Type: application/json" \
@@ -423,6 +469,16 @@ curl -X POST http://localhost:8080/api/reservations \
     "bookIsbn": "978-8535914093",
     "studentMatricula": "2024001"
   }'
+
+# Enviar notificação de atraso
+curl -X POST http://localhost:8080/api/notifications/overdue \
+  -H "Content-Type: application/json" \
+  -d '{"loanId": 1}'
+
+# Enviar notificação de reserva disponível
+curl -X POST http://localhost:8080/api/notifications/reservation-available \
+  -H "Content-Type: application/json" \
+  -d '{"reservationId": 1}'
 ```
 
 ### Usando Postman/Insomnia

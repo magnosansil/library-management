@@ -114,6 +114,20 @@ public class RoutesController {
                 "handler", "ReservationController.fulfillReservation(Long id)"));
         routes.put("reservations", reservationRoutes);
 
+        // Rotas de Notificações
+        Map<String, Object> notificationRoutes = new HashMap<>();
+        notificationRoutes.put("POST /api/notifications/overdue", Map.of(
+                "description", "Enviar notificação de livro em atraso por e-mail",
+                "handler",
+                "NotificationController.sendOverdueNotification(@RequestBody OverdueNotificationDTO request)",
+                "body", "OverdueNotificationDTO { loanId }"));
+        notificationRoutes.put("POST /api/notifications/reservation-available", Map.of(
+                "description", "Enviar notificação de livro reservado disponível por e-mail",
+                "handler",
+                "NotificationController.sendReservationAvailableNotification(@RequestBody ReservationAvailableNotificationDTO request)",
+                "body", "ReservationAvailableNotificationDTO { reservationId }"));
+        routes.put("notifications", notificationRoutes);
+
         // Rotas de Alunos
         Map<String, Object> studentRoutes = new HashMap<>();
         studentRoutes.put("GET /api/students", Map.of(

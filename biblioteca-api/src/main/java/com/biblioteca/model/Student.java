@@ -2,6 +2,7 @@ package com.biblioteca.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -36,6 +37,14 @@ public class Student {
 
   @Column(name = "data_nascimento", nullable = false)
   private LocalDate dataNascimento;
+
+  @NotBlank(message = "E-mail é obrigatório")
+  @Email(message = "E-mail deve ter um formato válido")
+  @Column(nullable = false, unique = true)
+  private String email;
+
+  @Column(nullable = true)
+  private String telefone;
 
   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore // Evita recursão infinita ao serializar JSON

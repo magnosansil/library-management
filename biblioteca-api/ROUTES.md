@@ -54,6 +54,19 @@ Este arquivo centraliza todas as rotas da API para fácil referência e manuten�
 
 ---
 
+## 📧 Notificações (`/api/notifications`)
+
+| Método | Rota                                       | Handler                                                         | Descrição                                           |
+| ------ | ------------------------------------------ | --------------------------------------------------------------- | --------------------------------------------------- |
+| POST   | `/api/notifications/overdue`               | `NotificationController.sendOverdueNotification()`              | Enviar notificação de livro em atraso por e-mail    |
+| POST   | `/api/notifications/reservation-available` | `NotificationController.sendReservationAvailableNotification()` | Enviar notificação de reserva disponível por e-mail |
+
+**Controller:** `com.biblioteca.controller.NotificationController`
+
+**Nota:** Requer configuração de e-mail no arquivo `.env` (MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD).
+
+---
+
 ## 👥 Alunos (`/api/students`)
 
 | Método | Rota                        | Handler                                     | Descrição                      |
@@ -153,13 +166,21 @@ DELETE /api/reservations/{id}                    → cancelReservation(Long id) 
 PUT    /api/reservations/{id}/fulfill            → fulfillReservation(Long id) // Marca como efetivada, reorganiza fila
 ```
 
+### Notificações
+
+```java
+// Controller: NotificationController
+POST   /api/notifications/overdue                 → sendOverdueNotification(@RequestBody OverdueNotificationDTO request)
+POST   /api/notifications/reservation-available    → sendReservationAvailableNotification(@RequestBody ReservationAvailableNotificationDTO request)
+```
+
 ### Alunos
 
 ```java
 // Controller: StudentController
 GET    /api/students                    → getAllStudents()
 GET    /api/students/{matricula}        → getStudentByMatricula(String matricula)
-POST   /api/students                    → createStudent(@RequestBody Student student)
+POST   /api/students                    → createStudent(@RequestBody Student student) // Agora inclui email (obrigatório) e telefone (opcional)
 POST   /api/students/batch              → createStudentsBatch(@RequestBody List<Student> students)
 PUT    /api/students/{matricula}        → updateStudent(String matricula, @RequestBody Student student)
 DELETE /api/students/{matricula}       → deleteStudent(String matricula)
@@ -187,11 +208,12 @@ GET /api/health → health()
 
 ## 📋 Resumo Rápido
 
-**Total de Rotas:** 27
+**Total de Rotas:** 29
 
 - **Livros:** 7 rotas
 - **Empréstimos:** 11 rotas
 - **Reservas:** 7 rotas
+- **Notificações:** 2 rotas
 - **Alunos:** 6 rotas
 - **Configurações:** 2 rotas
 - **Sistema:** 3 rotas
@@ -221,4 +243,27 @@ A formatação para exibição em dinheiro deve ser feita no front-end.
 
 ---
 
-**Última atualização:** 2024-12-19
+---
+
+## 📧 Sistema de Notificações por E-mail
+
+O sistema permite enviar notificações por e-mail para estudantes sobre:
+
+- Livros em atraso
+- Reservas disponíveis
+
+**Configuração necessária:**
+
+- Configure credenciais SMTP no arquivo `.env`
+- Estudantes devem ter e-mail cadastrado
+- Notificações são acionadas manualmente pelo front-end
+
+**Serviços recomendados:**
+
+- **Gmail**: Para testes (use Senha de App)
+- **Mailtrap**: Para desenvolvimento (captura e-mails sem enviar)
+- **SendGrid**: Para produção (100 e-mails/dia grátis)
+
+---
+
+**Última atualização:** 14-11-2025

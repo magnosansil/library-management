@@ -20,9 +20,20 @@ Content-Type: application/json
   "matricula": "2024001",
   "nome": "João Silva",
   "cpf": "12345678901",
-  "dataNascimento": "2000-05-15"
+  "dataNascimento": "2000-05-15",
+  "email": "joao.silva@exemplo.com",
+  "telefone": "(11) 99999-1111"
 }
 ```
+
+**Campos:**
+
+- `matricula` (obrigatório, único)
+- `nome` (obrigatório)
+- `cpf` (obrigatório, único, 11 dígitos)
+- `dataNascimento` (obrigatório, formato: YYYY-MM-DD)
+- `email` (obrigatório, único, formato válido)
+- `telefone` (opcional)
 
 #### Criar Múltiplos Alunos (Batch)
 
@@ -35,13 +46,16 @@ Content-Type: application/json
     "matricula": "2024001",
     "nome": "João Silva",
     "cpf": "12345678901",
-    "dataNascimento": "2000-05-15"
+    "dataNascimento": "2000-05-15",
+    "email": "joao.silva@exemplo.com",
+    "telefone": "(11) 99999-1111"
   },
   {
     "matricula": "2024002",
     "nome": "Maria Santos",
     "cpf": "98765432100",
-    "dataNascimento": "2001-08-20"
+    "dataNascimento": "2001-08-20",
+    "email": "maria.santos@exemplo.com"
   }
 ]
 ```
@@ -67,7 +81,9 @@ Content-Type: application/json
 {
   "nome": "João Silva Santos",
   "cpf": "12345678901",
-  "dataNascimento": "2000-05-15"
+  "dataNascimento": "2000-05-15",
+  "email": "joao.silva.santos@exemplo.com",
+  "telefone": "(11) 99999-1111"
 }
 ```
 
@@ -283,6 +299,164 @@ Este endpoint:
 GET /api/loans
 ```
 
+#### Listar Empréstimos em Atraso
+
+```http
+GET /api/loans/overdue
+```
+
+#### Listar Empréstimos Devolvidos
+
+```http
+GET /api/loans/returned
+```
+
+#### Listar Empréstimos Ativos e em Atraso
+
+```http
+GET /api/loans/active-and-overdue
+```
+
+---
+
+### Reservas
+
+#### Criar Reserva
+
+```http
+POST /api/reservations
+Content-Type: application/json
+
+{
+  "bookIsbn": "978-8535914093",
+  "studentMatricula": "2024001",
+  "reservationDate": "2024-01-15T10:00:00"  // Opcional
+}
+```
+
+**Resposta:**
+
+```json
+{
+  "id": 1,
+  "bookIsbn": "978-8535914093",
+  "bookTitle": "Dom Casmurro",
+  "studentMatricula": "2024001",
+  "studentName": "João Silva",
+  "reservationDate": "2024-01-15T10:00:00",
+  "queuePosition": 1,
+  "status": "ACTIVE"
+}
+```
+
+#### Listar Todas as Reservas
+
+```http
+GET /api/reservations
+```
+
+#### Buscar Reserva por ID
+
+```http
+GET /api/reservations/{id}
+```
+
+#### Listar Reservas de um Livro
+
+```http
+GET /api/reservations/book/{isbn}
+```
+
+**Resposta:** Lista de reservas ativas ordenadas por posição na fila (1, 2, 3...)
+
+#### Listar Reservas de um Estudante
+
+```http
+GET /api/reservations/student/{matricula}
+```
+
+#### Cancelar Reserva
+
+```http
+DELETE /api/reservations/{id}
+```
+
+**Nota:** A fila é reorganizada automaticamente (próximas reservas avançam).
+
+#### Efetivar Reserva
+
+```http
+PUT /api/reservations/{id}/fulfill
+```
+
+**Nota:** Marca a reserva como gerou empréstimo e reorganiza a fila automaticamente.
+
+---
+
+### Notificações
+
+#### Enviar Notificação de Livro em Atraso
+
+```http
+POST /api/notifications/overdue
+Content-Type: application/json
+
+{
+  "loanId": 1
+}
+```
+
+**Resposta:**
+
+```json
+{
+  "message": "Notificação de atraso enviada com sucesso",
+  "email": "joao.silva@exemplo.com",
+  "studentName": "João Silva",
+  "bookTitle": "Dom Casmurro",
+  "overdueDays": 6
+}
+```
+
+**Validações:**
+
+- Empréstimo deve existir
+- Empréstimo não deve estar devolvido
+- Estudante deve ter e-mail cadastrado
+- Empréstimo deve estar em atraso (dueDate < hoje)
+
+#### Enviar Notificação de Reserva Disponível
+
+```http
+POST /api/notifications/reservation-available
+Content-Type: application/json
+
+{
+  "reservationId": 1
+}
+```
+
+**Resposta:**
+
+```json
+{
+  "message": "Notificação de reserva disponível enviada com sucesso",
+  "email": "maria.santos@exemplo.com",
+  "studentName": "Maria Santos",
+  "bookTitle": "Dom Casmurro",
+  "reservationId": 1
+}
+```
+
+**Validações:**
+
+- Reserva deve existir
+- Reserva deve estar ativa
+- Estudante deve ter e-mail cadastrado
+- Livro deve estar disponível (quantity > 0)
+
+**Nota:** As notificações são enviadas por e-mail. Configure as credenciais SMTP no arquivo `.env` (veja configuração de e-mail).
+
 ---
 
 ## Configurações Globais (`/api/settings`)
@@ -322,6 +496,27 @@ Content-Type: application/json
 - `loanPeriodDays`: Prazo padrão de devolução em dias (padrão: 14)
 - `maxLoansPerStudent`: Limite máximo de empréstimos simultâneos por aluno (padrão: 3)
 - `finePerDay`: Multa por dia de atraso em centavos/unidade mínima (padrão: 100)
+
+---
+
+## Configuração de E-mail
+
+Para que as notificações funcionem, configure as credenciais SMTP no arquivo `.env`:
+
+```bash
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=seu-email@gmail.com
+MAIL_PASSWORD=senha-de-app
+```
+
+**Opções de serviço:**
+
+- **Gmail**: Use Senha de App (https://myaccount.google.com/apppasswords)
+- **Mailtrap**: Para testes (não envia e-mails reais, apenas captura)
+- **SendGrid**: Para produção (100 e-mails/dia grátis)
+
+**Nota:** As notificações são acionadas manualmente pelo front-end através das rotas de notificação.
 
 ---
 
@@ -369,7 +564,7 @@ O sistema calcula automaticamente multas quando um livro é devolvido com atraso
 ```bash
 curl -X POST http://localhost:8080/api/students \
   -H "Content-Type: application/json" \
-  -d '{"matricula": "2024001", "nome": "João Silva", "cpf": "12345678901", "dataNascimento": "2000-05-15"}'
+  -d '{"matricula": "2024001", "nome": "João Silva", "cpf": "12345678901", "dataNascimento": "2000-05-15", "email": "joao.silva@exemplo.com", "telefone": "(11) 99999-1111"}'
 ```
 
 2. **Criar livro:**
