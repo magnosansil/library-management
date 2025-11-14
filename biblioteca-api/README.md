@@ -43,8 +43,6 @@ Este projeto implementa uma **Fila de Reservas** para gerenciar reservas de livr
 
 #### Opção A: Banco na Nuvem (Recomendado para trabalho em equipe) ⭐
 
-**Veja o guia completo em:** [`CLOUD_DATABASE_SETUP.md`](CLOUD_DATABASE_SETUP.md)
-
 **Opções gratuitas recomendadas:**
 
 - **Neon** (Mais recomendado): https://neon.tech - Serverless PostgreSQL, 0.5 GB grátis, setup em 2 minutos
