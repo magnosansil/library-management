@@ -20,47 +20,67 @@ Este arquivo centraliza todas as rotas da API para fácil referência e manuten�
 
 ## 📖 Empréstimos (`/api/loans`)
 
-| Método | Rota                                   | Handler                                    | Descrição                                    |
-| ------ | -------------------------------------- | ------------------------------------------ | -------------------------------------------- |
-| GET    | `/api/loans`                           | `LoanController.getAllLoans()`             | Listar todos os empréstimos                  |
-| GET    | `/api/loans/active`                    | `LoanController.getActiveLoans()`          | Listar empréstimos ativos                    |
-| GET    | `/api/loans/active/user/{userId}`      | `LoanController.getActiveLoansByUser()`    | Empréstimos ativos de um usuário             |
-| GET    | `/api/loans/books/{isbn}/availability` | `LoanController.checkBookAvailability()`   | Verificar disponibilidade antes de emprestar |
-| GET    | `/api/loans/users/{userId}/can-borrow` | `LoanController.canUserBorrow()`           | Verificar se usuário pode emprestar          |
-| GET    | `/api/loans/check-overdue`             | `LoanController.checkOverdueLoans()`       | Verificar e atualizar empréstimos em atraso  |
-| GET    | `/api/loans/overdue-notifications`     | `LoanController.getOverdueNotifications()` | Notificações de empréstimos em atraso        |
-| POST   | `/api/loans`                           | `LoanController.createLoan()`              | Criar novo empréstimo                        |
-| PUT    | `/api/loans/{loanId}/return`           | `LoanController.returnLoan()`              | Registrar devolução de livro                 |
+| Método | Rota                                         | Handler                                    | Descrição                                                    |
+| ------ | -------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
+| GET    | `/api/loans`                                 | `LoanController.getAllLoans()`             | Listar todos os empréstimos                                  |
+| GET    | `/api/loans/active`                          | `LoanController.getActiveLoans()`          | Listar empréstimos ativos                                    |
+| GET    | `/api/loans/active/student/{matricula}`      | `LoanController.getActiveLoansByStudent()` | Empréstimos ativos de um aluno                               |
+| GET    | `/api/loans/books/{isbn}/availability`       | `LoanController.checkBookAvailability()`   | Verificar disponibilidade antes de emprestar                 |
+| GET    | `/api/loans/students/{matricula}/can-borrow` | `LoanController.canStudentBorrow()`        | Verificar se aluno pode emprestar                            |
+| GET    | `/api/loans/check-overdue`                   | `LoanController.checkOverdueLoans()`       | Verificar e atualizar empréstimos em atraso                  |
+| GET    | `/api/loans/overdue-notifications`           | `LoanController.getOverdueNotifications()` | Notificações de empréstimos em atraso                        |
+| POST   | `/api/loans`                                 | `LoanController.createLoan()`              | Criar novo empréstimo                                        |
+| PUT    | `/api/loans/{loanId}/return`                 | `LoanController.returnLoan()`              | Registrar devolução de livro (calcula multa automaticamente) |
 
 **Controller:** `com.biblioteca.controller.LoanController`
 
 ---
 
-## 👥 Usuários (`/api/users`)
+## 👥 Alunos (`/api/students`)
 
-| Método | Rota              | Handler                        | Descrição                |
-| ------ | ----------------- | ------------------------------ | ------------------------ |
-| GET    | `/api/users`      | `UserController.getAllUsers()` | Listar todos os usuários |
-| GET    | `/api/users/{id}` | `UserController.getUserById()` | Buscar usuário por ID    |
-| POST   | `/api/users`      | `UserController.createUser()`  | Criar novo usuário       |
-| PUT    | `/api/users/{id}` | `UserController.updateUser()`  | Atualizar usuário        |
-| DELETE | `/api/users/{id}` | `UserController.deleteUser()`  | Excluir usuário          |
+| Método | Rota                        | Handler                                     | Descrição                      |
+| ------ | --------------------------- | ------------------------------------------- | ------------------------------ |
+| GET    | `/api/students`             | `StudentController.getAllStudents()`        | Listar todos os alunos         |
+| GET    | `/api/students/{matricula}` | `StudentController.getStudentByMatricula()` | Buscar aluno por matrícula     |
+| POST   | `/api/students`             | `StudentController.createStudent()`         | Criar novo aluno (um por vez)  |
+| POST   | `/api/students/batch`       | `StudentController.createStudentsBatch()`   | Criar múltiplos alunos (array) |
+| PUT    | `/api/students/{matricula}` | `StudentController.updateStudent()`         | Atualizar aluno                |
+| DELETE | `/api/students/{matricula}` | `StudentController.deleteStudent()`         | Excluir aluno por matrícula    |
 
-**Controller:** `com.biblioteca.controller.UserController`
+**Controller:** `com.biblioteca.controller.StudentController`
+
+---
+
+## ⚙️ Configurações Globais (`/api/settings`)
+
+| Método | Rota            | Handler                                      | Descrição                       |
+| ------ | --------------- | -------------------------------------------- | ------------------------------- |
+| GET    | `/api/settings` | `LibrarySettingsController.getSettings()`    | Obter configurações globais     |
+| PUT    | `/api/settings` | `LibrarySettingsController.updateSettings()` | Atualizar configurações globais |
+
+**Controller:** `com.biblioteca.controller.LibrarySettingsController`
+
+**Campos configuráveis:**
+
+- `loanPeriodDays`: Prazo padrão de devolução em dias (padrão: 14)
+- `maxLoansPerStudent`: Limite máximo de empréstimos simultâneos por aluno (padrão: 3)
+- `finePerDay`: Multa por dia de atraso em centavos/unidade mínima (padrão: 100)
 
 ---
 
 ## 🏥 Sistema (`/` e `/api/health`)
 
-| Método | Rota          | Handler                     | Descrição                               |
-| ------ | ------------- | --------------------------- | --------------------------------------- |
-| GET    | `/`           | `IndexController.index()`   | Página inicial com informações da API   |
-| GET    | `/api/health` | `HealthController.health()` | Health check e status do banco de dados |
+| Método | Rota          | Handler                           | Descrição                               |
+| ------ | ------------- | --------------------------------- | --------------------------------------- |
+| GET    | `/`           | `IndexController.index()`         | Página inicial com informações da API   |
+| GET    | `/api/health` | `HealthController.health()`       | Health check e status do banco de dados |
+| GET    | `/api/routes` | `RoutesController.getAllRoutes()` | Listar todas as rotas (este arquivo)    |
 
 **Controllers:**
 
 - `com.biblioteca.controller.IndexController`
 - `com.biblioteca.controller.HealthController`
+- `com.biblioteca.controller.RoutesController`
 
 ---
 
@@ -91,24 +111,33 @@ DELETE /api/books/{isbn}             → deleteBook(String isbn)
 // Controller: LoanController
 GET    /api/loans                              → getAllLoans()
 GET    /api/loans/active                       → getActiveLoans()
-GET    /api/loans/active/user/{userId}          → getActiveLoansByUser(Long userId)
+GET    /api/loans/active/student/{matricula}   → getActiveLoansByStudent(String matricula)
 GET    /api/loans/books/{isbn}/availability    → checkBookAvailability(String isbn)
-GET    /api/loans/users/{userId}/can-borrow     → canUserBorrow(Long userId)
+GET    /api/loans/students/{matricula}/can-borrow → canStudentBorrow(String matricula)
 GET    /api/loans/check-overdue                 → checkOverdueLoans()
 GET    /api/loans/overdue-notifications         → getOverdueNotifications()
 POST   /api/loans                               → createLoan(@RequestBody LoanRequestDTO request)
-PUT    /api/loans/{loanId}/return               → returnLoan(Long loanId)
+PUT    /api/loans/{loanId}/return               → returnLoan(Long loanId) // Calcula multa automaticamente
 ```
 
-### Usuários
+### Alunos
 
 ```java
-// Controller: UserController
-GET    /api/users      → getAllUsers()
-GET    /api/users/{id} → getUserById(Long id)
-POST   /api/users      → createUser(@RequestBody User user)
-PUT    /api/users/{id} → updateUser(Long id, @RequestBody User user)
-DELETE /api/users/{id} → deleteUser(Long id)
+// Controller: StudentController
+GET    /api/students                    → getAllStudents()
+GET    /api/students/{matricula}        → getStudentByMatricula(String matricula)
+POST   /api/students                    → createStudent(@RequestBody Student student)
+POST   /api/students/batch              → createStudentsBatch(@RequestBody List<Student> students)
+PUT    /api/students/{matricula}        → updateStudent(String matricula, @RequestBody Student student)
+DELETE /api/students/{matricula}       → deleteStudent(String matricula)
+```
+
+### Configurações
+
+```java
+// Controller: LibrarySettingsController
+GET    /api/settings  → getSettings()
+PUT    /api/settings  → updateSettings(@RequestBody LibrarySettings settings)
 ```
 
 ### Sistema
@@ -125,12 +154,28 @@ GET /api/health → health()
 
 ## 📋 Resumo Rápido
 
-**Total de Rotas:** 21
+**Total de Rotas:** 25
 
 - **Livros:** 7 rotas
 - **Empréstimos:** 9 rotas
-- **Usuários:** 5 rotas
-- **Sistema:** 2 rotas
+- **Alunos:** 6 rotas
+- **Configurações:** 2 rotas
+- **Sistema:** 3 rotas
+
+## 💰 Sistema de Multas
+
+Ao devolver um livro (`PUT /api/loans/{loanId}/return`), o sistema calcula automaticamente:
+
+- **`overdueDays`**: Diferença em dias entre `dueDate` e `returnDate` (se houver atraso)
+- **`fineAmount`**: Valor da multa = `overdueDays × finePerDay` (das configurações globais)
+
+**Exemplo:**
+
+- Devolução com 7 dias de atraso
+- `finePerDay` = 100 (centavos)
+- `fineAmount` = 700 (centavos) = R$ 7,00
+
+A formatação para exibição em dinheiro deve ser feita no front-end.
 
 ---
 

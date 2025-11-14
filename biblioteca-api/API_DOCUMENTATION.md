@@ -8,50 +8,73 @@ http://localhost:8080/api
 
 ## Endpoints
 
-### Usuários
+### Alunos
 
-#### Criar Usuário
+#### Criar Aluno
 
 ```http
-POST /api/users
+POST /api/students
 Content-Type: application/json
 
 {
-  "name": "João Silva",
-  "email": "joao@email.com",
-  "maxLoans": 3
+  "matricula": "2024001",
+  "nome": "João Silva",
+  "cpf": "12345678901",
+  "dataNascimento": "2000-05-15"
 }
 ```
 
-#### Listar Todos os Usuários
+#### Criar Múltiplos Alunos (Batch)
 
 ```http
-GET /api/users
+POST /api/students/batch
+Content-Type: application/json
+
+[
+  {
+    "matricula": "2024001",
+    "nome": "João Silva",
+    "cpf": "12345678901",
+    "dataNascimento": "2000-05-15"
+  },
+  {
+    "matricula": "2024002",
+    "nome": "Maria Santos",
+    "cpf": "98765432100",
+    "dataNascimento": "2001-08-20"
+  }
+]
 ```
 
-#### Obter Usuário por ID
+#### Listar Todos os Alunos
 
 ```http
-GET /api/users/{id}
+GET /api/students
 ```
 
-#### Atualizar Usuário
+#### Obter Aluno por Matrícula
 
 ```http
-PUT /api/users/{id}
+GET /api/students/{matricula}
+```
+
+#### Atualizar Aluno
+
+```http
+PUT /api/students/{matricula}
 Content-Type: application/json
 
 {
-  "name": "João Silva",
-  "email": "joao@email.com",
-  "maxLoans": 5
+  "nome": "João Silva Santos",
+  "cpf": "12345678901",
+  "dataNascimento": "2000-05-15"
 }
 ```
 
-#### Deletar Usuário
+#### Deletar Aluno
 
 ```http
-DELETE /api/users/{id}
+DELETE /api/students/{matricula}
 ```
 
 ---
@@ -65,14 +88,36 @@ POST /api/books
 Content-Type: application/json
 
 {
+  "isbn": "978-8535914093",
   "title": "Dom Casmurro",
   "author": "Machado de Assis",
-  "publicationDate": "1899-01-01",
-  "isbn": "978-8535914093",
-  "price": 29.90,
-  "stockQuantity": 5,
-  "availableQuantity": 5
+  "coverImageUrl": "https://example.com/capa.jpg",
+  "keywords": "literatura brasileira, romance, século XIX",
+  "synopsis": "Romance clássico da literatura brasileira...",
+  "quantity": 5
 }
+```
+
+#### Criar Múltiplos Livros (Batch)
+
+```http
+POST /api/books/batch
+Content-Type: application/json
+
+[
+  {
+    "isbn": "978-8535914093",
+    "title": "Dom Casmurro",
+    "author": "Machado de Assis",
+    "quantity": 5
+  },
+  {
+    "isbn": "978-8535911234",
+    "title": "O Cortiço",
+    "author": "Aluísio Azevedo",
+    "quantity": 3
+  }
+]
 ```
 
 #### Listar Todos os Livros
@@ -81,26 +126,26 @@ Content-Type: application/json
 GET /api/books
 ```
 
-#### Obter Livro por ID
+#### Obter Livro por ISBN
 
 ```http
-GET /api/books/{id}
+GET /api/books/{isbn}
 ```
 
 #### Verificar Disponibilidade de Livro
 
 ```http
-GET /api/books/{id}/availability
+GET /api/books/{isbn}/availability
 ```
 
 **Resposta:**
 
 ```json
 {
-  "bookId": 1,
+  "bookIsbn": "978-8535914093",
   "bookTitle": "Dom Casmurro",
-  "totalQuantity": 5,
-  "availableQuantity": 3,
+  "bookAuthor": "Machado de Assis",
+  "quantity": 3,
   "isAvailable": true
 }
 ```
@@ -108,20 +153,20 @@ GET /api/books/{id}/availability
 #### Atualizar Livro
 
 ```http
-PUT /api/books/{id}
+PUT /api/books/{isbn}
 Content-Type: application/json
 
 {
   "title": "Dom Casmurro",
   "author": "Machado de Assis",
-  "stockQuantity": 10
+  "quantity": 10
 }
 ```
 
 #### Deletar Livro
 
 ```http
-DELETE /api/books/{id}
+DELETE /api/books/{isbn}
 ```
 
 ---
@@ -131,15 +176,15 @@ DELETE /api/books/{id}
 #### Verificar Disponibilidade de Livro (antes de emprestar)
 
 ```http
-GET /api/loans/books/{bookId}/availability
+GET /api/loans/books/{isbn}/availability
 ```
 
 **Resposta:** `true` ou `false`
 
-#### Verificar se Usuário Pode Emprestar
+#### Verificar se Aluno Pode Emprestar
 
 ```http
-GET /api/loans/users/{userId}/can-borrow
+GET /api/loans/students/{matricula}/can-borrow
 ```
 
 **Resposta:** `true` ou `false`
@@ -151,8 +196,8 @@ POST /api/loans
 Content-Type: application/json
 
 {
-  "userId": 1,
-  "bookId": 1
+  "studentMatricula": "2024001",
+  "bookIsbn": "978-8535914093"
 }
 ```
 
@@ -161,16 +206,21 @@ Content-Type: application/json
 ```json
 {
   "id": 1,
-  "userId": 1,
-  "userName": "João Silva",
-  "bookId": 1,
+  "studentMatricula": "2024001",
+  "studentName": "João Silva",
+  "bookIsbn": "978-8535914093",
   "bookTitle": "Dom Casmurro",
-  "loanDate": "2024-01-15",
-  "dueDate": "2024-01-29",
+  "bookAuthor": "Machado de Assis",
+  "loanDate": "2024-01-15T10:00:00",
+  "dueDate": "2024-01-29T10:00:00",
   "returnDate": null,
-  "status": "ACTIVE"
+  "status": "ACTIVE",
+  "overdueDays": null,
+  "fineAmount": null
 }
 ```
+
+**Nota:** `dueDate` é calculado automaticamente como `loanDate + loanPeriodDays` (configurado em `/api/settings`).
 
 #### Registrar Devolução
 
@@ -183,16 +233,26 @@ PUT /api/loans/{loanId}/return
 ```json
 {
   "id": 1,
-  "userId": 1,
-  "userName": "João Silva",
-  "bookId": 1,
+  "studentMatricula": "2024001",
+  "studentName": "João Silva",
+  "bookIsbn": "978-8535914093",
   "bookTitle": "Dom Casmurro",
-  "loanDate": "2024-01-15",
-  "dueDate": "2024-01-29",
-  "returnDate": "2024-01-20",
-  "status": "RETURNED"
+  "bookAuthor": "Machado de Assis",
+  "loanDate": "2024-01-15T10:00:00",
+  "dueDate": "2024-01-29T10:00:00",
+  "returnDate": "2024-02-05T14:30:00",
+  "status": "RETURNED",
+  "overdueDays": 7,
+  "fineAmount": 700
 }
 ```
+
+**Nota:** O sistema calcula automaticamente:
+
+- **`overdueDays`**: Diferença em dias entre `dueDate` e `returnDate` (se houver atraso)
+- **`fineAmount`**: Valor da multa calculado como `overdueDays × finePerDay` (configurado em `/api/settings`)
+
+Se não houver atraso, ambos os campos serão `0`.
 
 #### Listar Empréstimos Ativos
 
@@ -200,10 +260,10 @@ PUT /api/loans/{loanId}/return
 GET /api/loans/active
 ```
 
-#### Listar Empréstimos Ativos de um Usuário
+#### Listar Empréstimos Ativos de um Aluno
 
 ```http
-GET /api/loans/active/user/{userId}
+GET /api/loans/active/student/{matricula}
 ```
 
 #### Verificar e Atualizar Empréstimos em Atraso
@@ -234,11 +294,68 @@ GET /api/loans
 
 ---
 
+## Configurações Globais (`/api/settings`)
+
+### Obter Configurações
+
+```http
+GET /api/settings
+```
+
+**Resposta:**
+
+```json
+{
+  "id": 1,
+  "loanPeriodDays": 14,
+  "maxLoansPerStudent": 3,
+  "finePerDay": 100
+}
+```
+
+### Atualizar Configurações
+
+```http
+PUT /api/settings
+Content-Type: application/json
+
+{
+  "loanPeriodDays": 21,
+  "maxLoansPerStudent": 5,
+  "finePerDay": 150
+}
+```
+
+**Campos:**
+
+- `loanPeriodDays`: Prazo padrão de devolução em dias (padrão: 14)
+- `maxLoansPerStudent`: Limite máximo de empréstimos simultâneos por aluno (padrão: 3)
+- `finePerDay`: Multa por dia de atraso em centavos/unidade mínima (padrão: 100)
+
+---
+
 ## Status de Empréstimo
 
 - `ACTIVE`: Empréstimo ativo (livro ainda não devolvido)
 - `RETURNED`: Livro devolvido
 - `OVERDUE`: Empréstimo em atraso (data de devolução passou)
+
+## Sistema de Multas
+
+O sistema calcula automaticamente multas quando um livro é devolvido com atraso:
+
+1. **Cálculo de Dias de Atraso**: Diferença entre `dueDate` e `returnDate` (em dias)
+2. **Cálculo de Multa**: `overdueDays × finePerDay` (das configurações globais)
+
+**Exemplo:**
+
+- `dueDate`: 2024-01-29
+- `returnDate`: 2024-02-05
+- `overdueDays`: 7 dias
+- `finePerDay`: 100 (centavos)
+- `fineAmount`: 700 (centavos) = R$ 7,00
+
+**Nota:** A formatação para exibição em dinheiro (R$) deve ser feita no front-end.
 
 ---
 
@@ -256,12 +373,12 @@ GET /api/loans
 
 ### Fluxo Completo de Empréstimo
 
-1. **Criar usuário:**
+1. **Criar aluno:**
 
 ```bash
-curl -X POST http://localhost:8080/api/users \
+curl -X POST http://localhost:8080/api/students \
   -H "Content-Type: application/json" \
-  -d '{"name": "João", "email": "joao@email.com"}'
+  -d '{"matricula": "2024001", "nome": "João Silva", "cpf": "12345678901", "dataNascimento": "2000-05-15"}'
 ```
 
 2. **Criar livro:**
@@ -269,13 +386,13 @@ curl -X POST http://localhost:8080/api/users \
 ```bash
 curl -X POST http://localhost:8080/api/books \
   -H "Content-Type: application/json" \
-  -d '{"title": "Dom Casmurro", "author": "Machado de Assis", "stockQuantity": 5, "availableQuantity": 5}'
+  -d '{"isbn": "978-8535914093", "title": "Dom Casmurro", "author": "Machado de Assis", "quantity": 5}'
 ```
 
 3. **Verificar disponibilidade:**
 
 ```bash
-curl http://localhost:8080/api/loans/books/1/availability
+curl http://localhost:8080/api/loans/books/978-8535914093/availability
 ```
 
 4. **Criar empréstimo:**
@@ -283,7 +400,7 @@ curl http://localhost:8080/api/loans/books/1/availability
 ```bash
 curl -X POST http://localhost:8080/api/loans \
   -H "Content-Type: application/json" \
-  -d '{"userId": 1, "bookId": 1}'
+  -d '{"studentMatricula": "2024001", "bookIsbn": "978-8535914093"}'
 ```
 
 5. **Verificar empréstimos ativos:**
@@ -292,10 +409,28 @@ curl -X POST http://localhost:8080/api/loans \
 curl http://localhost:8080/api/loans/active
 ```
 
-6. **Devolver livro:**
+6. **Devolver livro (com cálculo automático de multa):**
 
 ```bash
 curl -X PUT http://localhost:8080/api/loans/1/return
+```
+
+**Resposta incluirá `overdueDays` e `fineAmount` se houver atraso:**
+
+```json
+{
+  "id": 1,
+  "studentMatricula": "2024001",
+  "studentName": "João Silva",
+  "bookIsbn": "978-8535914093",
+  "bookTitle": "Dom Casmurro",
+  "loanDate": "2024-01-15T10:00:00",
+  "dueDate": "2024-01-29T10:00:00",
+  "returnDate": "2024-02-05T14:30:00",
+  "status": "RETURNED",
+  "overdueDays": 7,
+  "fineAmount": 700
+}
 ```
 
 ---

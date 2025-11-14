@@ -85,42 +85,56 @@ cd biblioteca-api
 # Health check
 curl http://localhost:8080/api/health
 
-# Listar usuários
-curl http://localhost:8080/api/users
+# Listar alunos
+curl http://localhost:8080/api/students
 
 # Listar livros
 curl http://localhost:8080/api/books
 
 # Listar empréstimos
 curl http://localhost:8080/api/loans
+
+# Obter configurações globais
+curl http://localhost:8080/api/settings
 ```
 
 ### Usando Insomnia/Postman
 
 1. **Base URL**: `http://localhost:8080/api`
 2. **Health Check**: `GET http://localhost:8080/api/health`
-3. **Criar Usuário**: `POST http://localhost:8080/api/users`
+3. **Criar Aluno**: `POST http://localhost:8080/api/students`
    ```json
    {
-     "name": "João Silva",
-     "email": "joao@email.com",
-     "maxLoans": 3
+     "matricula": "2024001",
+     "nome": "João Silva",
+     "cpf": "12345678901",
+     "dataNascimento": "2000-05-15"
    }
    ```
 4. **Criar Livro**: `POST http://localhost:8080/api/books`
    ```json
    {
+     "isbn": "978-8535914093",
      "title": "Dom Casmurro",
      "author": "Machado de Assis",
-     "stockQuantity": 5,
-     "availableQuantity": 5
+     "quantity": 5
    }
    ```
 5. **Criar Empréstimo**: `POST http://localhost:8080/api/loans`
    ```json
    {
-     "userId": 1,
-     "bookId": 1
+     "studentMatricula": "2024001",
+     "bookIsbn": "978-8535914093"
+   }
+   ```
+6. **Devolver Livro (com cálculo automático de multa)**: `PUT http://localhost:8080/api/loans/{loanId}/return`
+7. **Obter Configurações**: `GET http://localhost:8080/api/settings`
+8. **Atualizar Configurações**: `PUT http://localhost:8080/api/settings`
+   ```json
+   {
+     "loanPeriodDays": 14,
+     "maxLoansPerStudent": 3,
+     "finePerDay": 100
    }
    ```
 
@@ -201,12 +215,17 @@ Ou verifique os logs completos no console.
 ## 7. Endpoints Disponíveis
 
 - `GET /api/health` - Health check com status do banco
-- `GET /api/users` - Listar usuários
-- `POST /api/users` - Criar usuário
+- `GET /api/students` - Listar alunos
+- `POST /api/students` - Criar aluno
+- `POST /api/students/batch` - Criar múltiplos alunos
 - `GET /api/books` - Listar livros
 - `POST /api/books` - Criar livro
+- `POST /api/books/batch` - Criar múltiplos livros
 - `GET /api/loans` - Listar empréstimos
 - `POST /api/loans` - Criar empréstimo
+- `PUT /api/loans/{loanId}/return` - Devolver livro (calcula multa automaticamente)
 - `GET /api/loans/active` - Empréstimos ativos
+- `GET /api/settings` - Obter configurações globais
+- `PUT /api/settings` - Atualizar configurações globais (prazo, limite, multa)
 
-Veja `API_DOCUMENTATION.md` para documentação completa.
+Veja `API_DOCUMENTATION.md` e `ROUTES.md` para documentação completa.
