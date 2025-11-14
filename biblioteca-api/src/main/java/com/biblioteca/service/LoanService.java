@@ -40,6 +40,62 @@ public class LoanService {
     }
 
     /**
+     * Atualiza o status do empréstimo automaticamente baseado nas datas
+     * 
+     * Regras:
+     * - Se returnDate != null → RETURNED
+     * - Se returnDate == null && dueDate < now → OVERDUE
+     * - Se returnDate == null && dueDate >= now → ACTIVE
+     * 
+     * @param loan Empréstimo a ser atualizado
+     * @return true se o status foi alterado, false caso contrário
+     */
+    @Transactional
+    public boolean updateLoanStatus(Loan loan) {
+        LocalDateTime now = LocalDateTime.now();
+        Loan.LoanStatus currentStatus = loan.getStatus();
+        Loan.LoanStatus newStatus;
+
+        // Se já foi devolvido, sempre RETURNED
+        if (loan.getReturnDate() != null) {
+            newStatus = Loan.LoanStatus.RETURNED;
+        }
+        // Se não foi devolvido e a data de vencimento passou, está em atraso
+        else if (loan.getDueDate().isBefore(now)) {
+            newStatus = Loan.LoanStatus.OVERDUE;
+        }
+        // Se não foi devolvido e ainda não venceu, está ativo
+        else {
+            newStatus = Loan.LoanStatus.ACTIVE;
+        }
+
+        // Atualizar status se mudou
+        if (currentStatus != newStatus) {
+            loan.setStatus(newStatus);
+            loanRepository.save(loan);
+
+            // Se mudou para OVERDUE, adicionar notificação
+            if (newStatus == Loan.LoanStatus.OVERDUE) {
+                notificationService.addOverdueNotification(loan);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Atualiza o status de uma lista de empréstimos
+     */
+    @Transactional
+    public void updateLoansStatus(List<Loan> loans) {
+        for (Loan loan : loans) {
+            updateLoanStatus(loan);
+        }
+    }
+
+    /**
      * Verifica disponibilidade de livro antes de emprestar
      */
     public boolean isBookAvailable(String isbn) {
@@ -50,12 +106,20 @@ public class LoanService {
 
     /**
      * Verifica se o aluno pode fazer mais empréstimos
+     * Atualiza status automaticamente antes de verificar
      */
     public boolean canStudentBorrow(String matricula) {
         // Verificar se o aluno existe
         if (!studentRepository.existsById(matricula)) {
             throw new RuntimeException("Aluno não encontrado");
         }
+
+        // Atualizar status dos empréstimos do aluno antes de contar
+        List<Loan> studentLoans = loanRepository.findAll().stream()
+                .filter(loan -> loan.getStudent().getMatricula().equals(matricula)
+                        && loan.getReturnDate() == null)
+                .collect(Collectors.toList());
+        updateLoansStatus(studentLoans);
 
         Integer maxLoans = settingsService.getMaxLoansPerStudent();
         Long activeLoansCount = studentRepository.countActiveLoansByMatricula(matricula);
@@ -78,6 +142,13 @@ public class LoanService {
         // Verificar limite de empréstimos do aluno
         Student student = studentRepository.findById(request.getStudentMatricula())
                 .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+
+        // Atualizar status dos empréstimos do aluno antes de verificar limite
+        List<Loan> studentLoans = loanRepository.findAll().stream()
+                .filter(loan -> loan.getStudent().getMatricula().equals(request.getStudentMatricula())
+                        && loan.getReturnDate() == null)
+                .collect(Collectors.toList());
+        updateLoansStatus(studentLoans);
 
         Integer maxLoans = settingsService.getMaxLoansPerStudent();
         Long activeLoansCount = studentRepository.countActiveLoansByMatricula(request.getStudentMatricula());
@@ -164,14 +235,27 @@ public class LoanService {
         bookRepository.save(book);
 
         Loan savedLoan = loanRepository.save(loan);
+
+        // Garantir que o status está correto após salvar
+        updateLoanStatus(savedLoan);
+
         return LoanResponseDTO.fromEntity(savedLoan);
     }
 
     /**
      * Gera relatório de empréstimos ativos
+     * Atualiza status automaticamente antes de retornar
      */
     public List<LoanResponseDTO> getActiveLoans() {
-        List<Loan> activeLoans = loanRepository.findByStatus(Loan.LoanStatus.ACTIVE);
+        // Buscar todos os empréstimos que não foram devolvidos
+        List<Loan> allLoans = loanRepository.findAll();
+        updateLoansStatus(allLoans);
+
+        // Filtrar apenas os que estão ativos após atualização
+        List<Loan> activeLoans = allLoans.stream()
+                .filter(loan -> loan.getStatus() == Loan.LoanStatus.ACTIVE)
+                .collect(Collectors.toList());
+
         return activeLoans.stream()
                 .map(LoanResponseDTO::fromEntity)
                 .collect(Collectors.toList());
@@ -179,9 +263,22 @@ public class LoanService {
 
     /**
      * Obtém empréstimos ativos de um aluno
+     * Atualiza status automaticamente antes de retornar
      */
     public List<LoanResponseDTO> getActiveLoansByStudent(String matricula) {
-        List<Loan> activeLoans = loanRepository.findActiveLoansByMatricula(matricula);
+        // Buscar todos os empréstimos do aluno que não foram devolvidos
+        List<Loan> studentLoans = loanRepository.findAll().stream()
+                .filter(loan -> loan.getStudent().getMatricula().equals(matricula)
+                        && loan.getReturnDate() == null)
+                .collect(Collectors.toList());
+
+        updateLoansStatus(studentLoans);
+
+        // Filtrar apenas os que estão ativos após atualização
+        List<Loan> activeLoans = studentLoans.stream()
+                .filter(loan -> loan.getStatus() == Loan.LoanStatus.ACTIVE)
+                .collect(Collectors.toList());
+
         return activeLoans.stream()
                 .map(LoanResponseDTO::fromEntity)
                 .collect(Collectors.toList());
@@ -189,20 +286,22 @@ public class LoanService {
 
     /**
      * Verifica e atualiza empréstimos em atraso
+     * Atualiza status automaticamente de todos os empréstimos
      */
     @Transactional
     public List<LoanResponseDTO> checkAndUpdateOverdueLoans() {
-        LocalDateTime now = LocalDateTime.now();
-        List<Loan> overdueLoans = loanRepository.findOverdueLoans(now);
+        // Buscar todos os empréstimos não devolvidos
+        List<Loan> allLoans = loanRepository.findAll().stream()
+                .filter(loan -> loan.getReturnDate() == null)
+                .collect(Collectors.toList());
 
-        for (Loan loan : overdueLoans) {
-            if (loan.getStatus() == Loan.LoanStatus.ACTIVE) {
-                loan.setStatus(Loan.LoanStatus.OVERDUE);
-                loanRepository.save(loan);
-                // Adicionar à fila de notificações usando LinkedList
-                notificationService.addOverdueNotification(loan);
-            }
-        }
+        // Atualizar status de todos
+        updateLoansStatus(allLoans);
+
+        // Filtrar apenas os que estão em atraso
+        List<Loan> overdueLoans = allLoans.stream()
+                .filter(loan -> loan.getStatus() == Loan.LoanStatus.OVERDUE)
+                .collect(Collectors.toList());
 
         return overdueLoans.stream()
                 .map(LoanResponseDTO::fromEntity)
@@ -221,9 +320,11 @@ public class LoanService {
 
     /**
      * Obtém todos os empréstimos
+     * Atualiza status automaticamente antes de retornar
      */
     public List<LoanResponseDTO> getAllLoans() {
         List<Loan> loans = loanRepository.findAll();
+        updateLoansStatus(loans);
         return loans.stream()
                 .map(LoanResponseDTO::fromEntity)
                 .collect(Collectors.toList());
