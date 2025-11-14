@@ -292,6 +292,35 @@ curl http://localhost:8080/api/loans/active-and-overdue
 curl http://localhost:8080/api/loans/check-overdue
 ```
 
+### Criar uma Reserva
+
+```bash
+curl -X POST http://localhost:8080/api/reservations \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bookIsbn": "978-8535914093",
+    "studentMatricula": "2024001"
+  }'
+```
+
+### Listar Reservas de um Livro
+
+```bash
+curl http://localhost:8080/api/reservations/book/978-8535914093
+```
+
+### Cancelar Reserva
+
+```bash
+curl -X DELETE http://localhost:8080/api/reservations/1
+```
+
+### Efetivar Reserva
+
+```bash
+curl -X PUT http://localhost:8080/api/reservations/1/fulfill
+```
+
 ## 🗄️ Estrutura do Banco de Dados
 
 ### Tabela: `books`
@@ -304,6 +333,7 @@ curl http://localhost:8080/api/loans/check-overdue
 - `synopsis` (TEXT)
 - `entry_date` (DATE, NOT NULL)
 - `quantity` (INTEGER, NOT NULL, padrão: 0)
+- `active_reservations_count` (INTEGER, NOT NULL, padrão: 0) - Contador de reservas ativas
 
 ### Tabela: `students`
 
@@ -311,6 +341,7 @@ curl http://localhost:8080/api/loans/check-overdue
 - `nome` (VARCHAR, NOT NULL)
 - `cpf` (VARCHAR, UNIQUE, NOT NULL)
 - `data_nascimento` (DATE, NOT NULL)
+- `reservations_count` (INTEGER, NOT NULL, padrão: 0) - Total de reservas registradas
 
 ### Tabela: `loans`
 
@@ -323,6 +354,16 @@ curl http://localhost:8080/api/loans/check-overdue
 - `status` (VARCHAR, NOT NULL) - ACTIVE, RETURNED, OVERDUE (atualizado automaticamente)
 - `overdue_days` (INTEGER) - Dias de atraso (calculado na devolução)
 - `fine_amount` (INTEGER) - Valor da multa em centavos (calculado na devolução)
+- `created_at` (TIMESTAMP, NOT NULL)
+
+### Tabela: `reservations`
+
+- `id` (BIGSERIAL, PK)
+- `book_isbn` (VARCHAR, FK -> books.isbn, NOT NULL)
+- `student_matricula` (VARCHAR, FK -> students.matricula, NOT NULL)
+- `reservation_date` (TIMESTAMP, NOT NULL)
+- `queue_position` (INTEGER, NOT NULL) - Posição na fila (1 a 5)
+- `status` (VARCHAR, NOT NULL) - ACTIVE, CANCELLED, FULFILLED
 - `created_at` (TIMESTAMP, NOT NULL)
 
 ### Tabela: `library_settings`
@@ -367,12 +408,21 @@ npx prisma generate
 ### Usando cURL
 
 ```bash
-# Criar usuário (se tiver endpoint)
-# Criar livro (se tiver endpoint)
 # Criar empréstimo
 curl -X POST http://localhost:8080/api/loans \
   -H "Content-Type: application/json" \
-  -d '{"userId": 1, "bookId": 1}'
+  -d '{
+    "studentMatricula": "2024001",
+    "bookIsbn": "978-8535914093"
+  }'
+
+# Criar reserva
+curl -X POST http://localhost:8080/api/reservations \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bookIsbn": "978-8535914093",
+    "studentMatricula": "2024001"
+  }'
 ```
 
 ### Usando Postman/Insomnia
