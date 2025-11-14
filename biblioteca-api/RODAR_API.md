@@ -127,7 +127,9 @@ curl http://localhost:8080/api/settings
      "bookIsbn": "978-8535914093"
    }
    ```
-6. **Devolver Livro (com cálculo automático de multa)**: `PUT http://localhost:8080/api/loans/{loanId}/return`
+6. **Devolver Livro (com cálculo automático de multa)**:
+   - `PUT http://localhost:8080/api/loans/{loanId}/return` (usa data atual)
+   - `PUT http://localhost:8080/api/loans/{loanId}/return` com body: `{"returnDate": "2024-01-20T14:30:00"}` (data específica)
 7. **Obter Configurações**: `GET http://localhost:8080/api/settings`
 8. **Atualizar Configurações**: `PUT http://localhost:8080/api/settings`
    ```json
@@ -214,17 +216,43 @@ Ou verifique os logs completos no console.
 
 ## 7. Endpoints Disponíveis
 
+### Sistema
+
 - `GET /api/health` - Health check com status do banco
+- `GET /api/routes` - Listar todas as rotas da API
+
+### Alunos
+
 - `GET /api/students` - Listar alunos
 - `POST /api/students` - Criar aluno
 - `POST /api/students/batch` - Criar múltiplos alunos
+- `GET /api/students/{matricula}` - Buscar aluno por matrícula
+- `PUT /api/students/{matricula}` - Atualizar aluno
+- `DELETE /api/students/{matricula}` - Excluir aluno
+
+### Livros
+
 - `GET /api/books` - Listar livros
 - `POST /api/books` - Criar livro
 - `POST /api/books/batch` - Criar múltiplos livros
-- `GET /api/loans` - Listar empréstimos
+- `GET /api/books/{isbn}` - Buscar livro por ISBN
+- `PUT /api/books/{isbn}` - Atualizar livro
+- `DELETE /api/books/{isbn}` - Excluir livro
+
+### Empréstimos
+
+- `GET /api/loans` - Listar todos os empréstimos
+- `GET /api/loans/active` - Empréstimos ativos
+- `GET /api/loans/overdue` - Empréstimos em atraso
+- `GET /api/loans/returned` - Empréstimos devolvidos
+- `GET /api/loans/active-and-overdue` - Empréstimos ativos e em atraso
+- `GET /api/loans/active/student/{matricula}` - Empréstimos ativos de um aluno
 - `POST /api/loans` - Criar empréstimo
 - `PUT /api/loans/{loanId}/return` - Devolver livro (calcula multa automaticamente)
-- `GET /api/loans/active` - Empréstimos ativos
+  - Body opcional: `{"returnDate": "2024-01-20T14:30:00"}`
+
+### Configurações
+
 - `GET /api/settings` - Obter configurações globais
 - `PUT /api/settings` - Atualizar configurações globais (prazo, limite, multa)
 

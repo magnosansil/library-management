@@ -20,17 +20,20 @@ Este arquivo centraliza todas as rotas da API para fácil referência e manuten�
 
 ## 📖 Empréstimos (`/api/loans`)
 
-| Método | Rota                                         | Handler                                    | Descrição                                                    |
-| ------ | -------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
-| GET    | `/api/loans`                                 | `LoanController.getAllLoans()`             | Listar todos os empréstimos                                  |
-| GET    | `/api/loans/active`                          | `LoanController.getActiveLoans()`          | Listar empréstimos ativos                                    |
-| GET    | `/api/loans/active/student/{matricula}`      | `LoanController.getActiveLoansByStudent()` | Empréstimos ativos de um aluno                               |
-| GET    | `/api/loans/books/{isbn}/availability`       | `LoanController.checkBookAvailability()`   | Verificar disponibilidade antes de emprestar                 |
-| GET    | `/api/loans/students/{matricula}/can-borrow` | `LoanController.canStudentBorrow()`        | Verificar se aluno pode emprestar                            |
-| GET    | `/api/loans/check-overdue`                   | `LoanController.checkOverdueLoans()`       | Verificar e atualizar empréstimos em atraso                  |
-| GET    | `/api/loans/overdue-notifications`           | `LoanController.getOverdueNotifications()` | Notificações de empréstimos em atraso                        |
-| POST   | `/api/loans`                                 | `LoanController.createLoan()`              | Criar novo empréstimo                                        |
-| PUT    | `/api/loans/{loanId}/return`                 | `LoanController.returnLoan()`              | Registrar devolução de livro (calcula multa automaticamente) |
+| Método | Rota                                         | Handler                                     | Descrição                                                                           |
+| ------ | -------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------- |
+| GET    | `/api/loans`                                 | `LoanController.getAllLoans()`              | Listar todos os empréstimos                                                         |
+| GET    | `/api/loans/active`                          | `LoanController.getActiveLoans()`           | Listar empréstimos ativos                                                           |
+| GET    | `/api/loans/overdue`                         | `LoanController.getOverdueLoans()`          | Listar empréstimos em atraso (status OVERDUE)                                       |
+| GET    | `/api/loans/returned`                        | `LoanController.getReturnedLoans()`         | Listar empréstimos devolvidos (status RETURNED)                                     |
+| GET    | `/api/loans/active-and-overdue`              | `LoanController.getActiveAndOverdueLoans()` | Listar empréstimos ativos e em atraso juntos                                        |
+| GET    | `/api/loans/active/student/{matricula}`      | `LoanController.getActiveLoansByStudent()`  | Empréstimos ativos de um aluno                                                      |
+| GET    | `/api/loans/books/{isbn}/availability`       | `LoanController.checkBookAvailability()`    | Verificar disponibilidade antes de emprestar                                        |
+| GET    | `/api/loans/students/{matricula}/can-borrow` | `LoanController.canStudentBorrow()`         | Verificar se aluno pode emprestar                                                   |
+| GET    | `/api/loans/check-overdue`                   | `LoanController.checkOverdueLoans()`        | Verificar e atualizar empréstimos em atraso                                         |
+| GET    | `/api/loans/overdue-notifications`           | `LoanController.getOverdueNotifications()`  | Notificações de empréstimos em atraso                                               |
+| POST   | `/api/loans`                                 | `LoanController.createLoan()`               | Criar novo empréstimo                                                               |
+| PUT    | `/api/loans/{loanId}/return`                 | `LoanController.returnLoan()`               | Registrar devolução de livro (calcula multa automaticamente, data opcional no body) |
 
 **Controller:** `com.biblioteca.controller.LoanController`
 
@@ -111,13 +114,16 @@ DELETE /api/books/{isbn}             → deleteBook(String isbn)
 // Controller: LoanController
 GET    /api/loans                              → getAllLoans()
 GET    /api/loans/active                       → getActiveLoans()
+GET    /api/loans/overdue                      → getOverdueLoans()
+GET    /api/loans/returned                     → getReturnedLoans()
+GET    /api/loans/active-and-overdue            → getActiveAndOverdueLoans()
 GET    /api/loans/active/student/{matricula}   → getActiveLoansByStudent(String matricula)
 GET    /api/loans/books/{isbn}/availability    → checkBookAvailability(String isbn)
 GET    /api/loans/students/{matricula}/can-borrow → canStudentBorrow(String matricula)
 GET    /api/loans/check-overdue                 → checkOverdueLoans()
 GET    /api/loans/overdue-notifications         → getOverdueNotifications()
 POST   /api/loans                               → createLoan(@RequestBody LoanRequestDTO request)
-PUT    /api/loans/{loanId}/return               → returnLoan(Long loanId) // Calcula multa automaticamente
+PUT    /api/loans/{loanId}/return               → returnLoan(Long loanId, LoanReturnDTO returnDTO) // Calcula multa automaticamente, data opcional
 ```
 
 ### Alunos
@@ -154,10 +160,10 @@ GET /api/health → health()
 
 ## 📋 Resumo Rápido
 
-**Total de Rotas:** 25
+**Total de Rotas:** 28
 
 - **Livros:** 7 rotas
-- **Empréstimos:** 9 rotas
+- **Empréstimos:** 12 rotas
 - **Alunos:** 6 rotas
 - **Configurações:** 2 rotas
 - **Sistema:** 3 rotas
@@ -187,4 +193,4 @@ A formatação para exibição em dinheiro deve ser feita no front-end.
 
 ---
 
-**Última atualização:** 2024-11-14
+**Última atualização:** 2024-12-19

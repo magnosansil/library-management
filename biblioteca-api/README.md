@@ -8,11 +8,13 @@ API REST para gerenciamento de biblioteca desenvolvida em Java com Spring Boot. 
 
 - ✅ Verificar disponibilidade de livro antes de emprestar (READ)
 - ✅ Atualizar estoque automaticamente
-- ✅ Limitar número máximo de empréstimo simultâneo por usuário
+- ✅ Limitar número máximo de empréstimo simultâneo por aluno
 - ✅ Notificar bibliotecário sobre empréstimos em atraso
-- ✅ Gerar relatório de empréstimos ativos
-- ✅ Registrar devolução de livro
+- ✅ Gerar relatório de empréstimos por status (ACTIVE, OVERDUE, RETURNED)
+- ✅ Registrar devolução de livro com cálculo automático de multa
 - ✅ Registrar novo empréstimo de livro
+- ✅ Atualização automática de status baseada em datas
+- ✅ Sistema de multas configurável (multa por dia de atraso)
 
 ## 🏗️ Estruturas de Dados Aplicadas
 
@@ -205,17 +207,20 @@ A API estará disponível em: `http://localhost:8080`
 
 ### Empréstimos
 
-| Método | Endpoint                                 | Descrição                                   |
-| ------ | ---------------------------------------- | ------------------------------------------- |
-| GET    | `/api/loans/books/{bookId}/availability` | Verificar disponibilidade de livro          |
-| GET    | `/api/loans/users/{userId}/can-borrow`   | Verificar se usuário pode emprestar         |
-| POST   | `/api/loans`                             | Criar novo empréstimo                       |
-| PUT    | `/api/loans/{loanId}/return`             | Registrar devolução                         |
-| GET    | `/api/loans/active`                      | Listar empréstimos ativos                   |
-| GET    | `/api/loans/active/user/{userId}`        | Empréstimos ativos de um usuário            |
-| GET    | `/api/loans/check-overdue`               | Verificar e atualizar empréstimos em atraso |
-| GET    | `/api/loans/overdue-notifications`       | Obter notificações de empréstimos em atraso |
-| GET    | `/api/loans`                             | Listar todos os empréstimos                 |
+| Método | Endpoint                                     | Descrição                                           |
+| ------ | -------------------------------------------- | --------------------------------------------------- |
+| GET    | `/api/loans`                                 | Listar todos os empréstimos                         |
+| GET    | `/api/loans/active`                          | Listar empréstimos ativos                           |
+| GET    | `/api/loans/overdue`                         | Listar empréstimos em atraso (OVERDUE)              |
+| GET    | `/api/loans/returned`                        | Listar empréstimos devolvidos (RETURNED)            |
+| GET    | `/api/loans/active-and-overdue`              | Listar empréstimos ativos e em atraso               |
+| GET    | `/api/loans/active/student/{matricula}`      | Empréstimos ativos de um aluno                      |
+| GET    | `/api/loans/books/{isbn}/availability`       | Verificar disponibilidade de livro                  |
+| GET    | `/api/loans/students/{matricula}/can-borrow` | Verificar se aluno pode emprestar                   |
+| GET    | `/api/loans/check-overdue`                   | Verificar e atualizar empréstimos em atraso         |
+| GET    | `/api/loans/overdue-notifications`           | Obter notificações de empréstimos em atraso         |
+| POST   | `/api/loans`                                 | Criar novo empréstimo                               |
+| PUT    | `/api/loans/{loanId}/return`                 | Registrar devolução (calcula multa automaticamente) |
 
 ### Livros
 
@@ -231,27 +236,43 @@ A API estará disponível em: `http://localhost:8080`
 curl -X POST http://localhost:8080/api/loans \
   -H "Content-Type: application/json" \
   -d '{
-    "userId": 1,
-    "bookId": 1
+    "studentMatricula": "2024001",
+    "bookIsbn": "978-8535914093"
   }'
 ```
 
 ### Verificar Disponibilidade
 
 ```bash
-curl http://localhost:8080/api/loans/books/1/availability
+curl http://localhost:8080/api/loans/books/978-8535914093/availability
 ```
 
 ### Registrar Devolução
 
 ```bash
+# Devolução com data atual (automática)
 curl -X PUT http://localhost:8080/api/loans/1/return
+
+# Devolução com data específica (opcional)
+curl -X PUT http://localhost:8080/api/loans/1/return \
+  -H "Content-Type: application/json" \
+  -d '{"returnDate": "2024-01-20T14:30:00"}'
 ```
 
-### Obter Empréstimos Ativos
+### Obter Empréstimos por Status
 
 ```bash
+# Empréstimos ativos
 curl http://localhost:8080/api/loans/active
+
+# Empréstimos em atraso
+curl http://localhost:8080/api/loans/overdue
+
+# Empréstimos devolvidos
+curl http://localhost:8080/api/loans/returned
+
+# Empréstimos ativos e em atraso juntos
+curl http://localhost:8080/api/loans/active-and-overdue
 ```
 
 ### Verificar Empréstimos em Atraso
@@ -264,33 +285,41 @@ curl http://localhost:8080/api/loans/check-overdue
 
 ### Tabela: `books`
 
-- `id` (BIGINT, PK)
+- `isbn` (VARCHAR, PK, UNIQUE, NOT NULL)
 - `title` (VARCHAR, NOT NULL)
-- `author` (VARCHAR)
-- `publication_date` (DATE)
-- `isbn` (VARCHAR)
-- `price` (DECIMAL)
-- `stock_quantity` (INT, NOT NULL)
-- `available_quantity` (INT, NOT NULL)
+- `author` (VARCHAR, NOT NULL)
+- `cover_image_url` (VARCHAR)
+- `keywords` (VARCHAR)
+- `synopsis` (TEXT)
+- `entry_date` (DATE, NOT NULL)
+- `quantity` (INTEGER, NOT NULL, padrão: 0)
 
-### Tabela: `users`
+### Tabela: `students`
 
-- `id` (BIGINT, PK)
-- `name` (VARCHAR, NOT NULL)
-- `email` (VARCHAR, NOT NULL, UNIQUE)
-- `max_loans` (INT, DEFAULT 3)
-- `created_at` (TIMESTAMP, NOT NULL)
+- `matricula` (VARCHAR, PK)
+- `nome` (VARCHAR, NOT NULL)
+- `cpf` (VARCHAR, UNIQUE, NOT NULL)
+- `data_nascimento` (DATE, NOT NULL)
 
 ### Tabela: `loans`
 
 - `id` (BIGINT, PK)
-- `user_id` (BIGINT, FK -> users.id)
-- `book_id` (BIGINT, FK -> books.id)
-- `loan_date` (DATE, NOT NULL)
-- `due_date` (DATE, NOT NULL)
-- `return_date` (DATE)
-- `status` (VARCHAR, NOT NULL) - ACTIVE, RETURNED, OVERDUE
+- `student_matricula` (VARCHAR, FK -> students.matricula)
+- `book_isbn` (VARCHAR, FK -> books.isbn)
+- `loan_date` (TIMESTAMP, NOT NULL)
+- `due_date` (TIMESTAMP, NOT NULL)
+- `return_date` (TIMESTAMP)
+- `status` (VARCHAR, NOT NULL) - ACTIVE, RETURNED, OVERDUE (atualizado automaticamente)
+- `overdue_days` (INTEGER) - Dias de atraso (calculado na devolução)
+- `fine_amount` (INTEGER) - Valor da multa em centavos (calculado na devolução)
 - `created_at` (TIMESTAMP, NOT NULL)
+
+### Tabela: `library_settings`
+
+- `id` (BIGINT, PK, sempre 1)
+- `loan_period_days` (INTEGER, NOT NULL, padrão: 14)
+- `max_loans_per_student` (INTEGER, NOT NULL, padrão: 3)
+- `fine_per_day` (INTEGER, NOT NULL, padrão: 100) - Multa por dia de atraso em centavos
 
 ## 🔄 Fluxo de Trabalho com Prisma
 
