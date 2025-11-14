@@ -1,0 +1,212 @@
+# 🚀 Como Rodar a API e Manter em Execução
+
+## 1. Executar a Aplicação
+
+### Opção A: Terminal Normal (Recomendado para testes)
+
+Abra um terminal PowerShell/CMD e execute:
+
+```powershell
+cd biblioteca-api
+mvn spring-boot:run
+```
+
+**A aplicação ficará rodando até você pressionar `Ctrl+C`**
+
+### Opção B: Background (Windows PowerShell)
+
+Para rodar em background e continuar usando o terminal:
+
+```powershell
+cd biblioteca-api
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "mvn spring-boot:run"
+```
+
+### Opção C: Usando o JAR compilado
+
+```powershell
+# Compilar
+mvn clean package -DskipTests
+
+# Executar
+java -jar target/biblioteca-api-1.0.0.jar
+```
+
+## 2. Verificar se Está Rodando
+
+### Verificar Health Check (Conexão com Banco)
+
+Abra outro terminal e execute:
+
+```powershell
+# Verificar se API está respondendo
+curl http://localhost:8080/api/health
+
+# Ou no navegador:
+# http://localhost:8080/api/health
+```
+
+**Resposta esperada:**
+
+```json
+{
+  "status": "UP",
+  "timestamp": 1234567890,
+  "database": {
+    "status": "CONNECTED",
+    "database": "PostgreSQL",
+    "version": "15.x",
+    "url": "jdbc:postgresql://...",
+    "driver": "PostgreSQL JDBC Driver"
+  }
+}
+```
+
+### Verificar Porta
+
+```powershell
+netstat -ano | findstr :8080
+```
+
+Se aparecer algo como `TCP 0.0.0.0:8080`, a aplicação está rodando!
+
+## 3. Testar Endpoints
+
+### Usando PowerShell (test-api.ps1)
+
+```powershell
+cd biblioteca-api
+.\test-api.ps1
+```
+
+### Usando cURL Manual
+
+```powershell
+# Health check
+curl http://localhost:8080/api/health
+
+# Listar usuários
+curl http://localhost:8080/api/users
+
+# Listar livros
+curl http://localhost:8080/api/books
+
+# Listar empréstimos
+curl http://localhost:8080/api/loans
+```
+
+### Usando Insomnia/Postman
+
+1. **Base URL**: `http://localhost:8080/api`
+2. **Health Check**: `GET http://localhost:8080/api/health`
+3. **Criar Usuário**: `POST http://localhost:8080/api/users`
+   ```json
+   {
+     "name": "João Silva",
+     "email": "joao@email.com",
+     "maxLoans": 3
+   }
+   ```
+4. **Criar Livro**: `POST http://localhost:8080/api/books`
+   ```json
+   {
+     "title": "Dom Casmurro",
+     "author": "Machado de Assis",
+     "stockQuantity": 5,
+     "availableQuantity": 5
+   }
+   ```
+5. **Criar Empréstimo**: `POST http://localhost:8080/api/loans`
+   ```json
+   {
+     "userId": 1,
+     "bookId": 1
+   }
+   ```
+
+## 4. Logs e Debug
+
+### Ver Logs da Aplicação
+
+Quando rodar `mvn spring-boot:run`, você verá:
+
+- ✅ "Started BibliotecaApplication" = Aplicação iniciou
+- ✅ "Hibernate: create table..." = Tabelas sendo criadas
+- ✅ "Variáveis do arquivo .env carregadas" = Configuração OK
+
+### Verificar Conexão com Banco
+
+Os logs mostrarão:
+
+```
+Hibernate: create table books ...
+Hibernate: create table users ...
+Hibernate: create table loans ...
+```
+
+Se aparecer erro de conexão, verifique:
+
+1. Arquivo `.env` existe e tem as credenciais corretas
+2. Banco Neon está ativo (não pausado)
+3. Connection string está correta
+
+## 5. Manter Rodando para Testes
+
+### Para Insomnia/Postman
+
+1. Execute `mvn spring-boot:run` em um terminal
+2. **Deixe esse terminal aberto** (não feche!)
+3. Use outro terminal ou o Insomnia/Postman para fazer requisições
+4. Para parar: Pressione `Ctrl+C` no terminal onde está rodando
+
+### Para Desenvolvimento Contínuo
+
+O Spring Boot DevTools está configurado, então:
+
+- Alterações no código reiniciam automaticamente
+- Não precisa parar e iniciar manualmente
+
+## 6. Troubleshooting
+
+### Aplicação não inicia
+
+1. Verifique se a porta 8080 está livre:
+   ```powershell
+   netstat -ano | findstr :8080
+   ```
+2. Se estiver em uso, mude a porta no `.env`:
+   ```
+   SERVER_PORT=8081
+   ```
+
+### Erro de conexão com banco
+
+1. Verifique o arquivo `.env`:
+   ```powershell
+   cat .env
+   ```
+2. Teste a connection string manualmente
+3. Verifique se o banco Neon está ativo (não pausado)
+
+### Build Success mas não roda
+
+Execute com mais verbosidade:
+
+```powershell
+mvn spring-boot:run -X
+```
+
+Ou verifique os logs completos no console.
+
+## 7. Endpoints Disponíveis
+
+- `GET /api/health` - Health check com status do banco
+- `GET /api/users` - Listar usuários
+- `POST /api/users` - Criar usuário
+- `GET /api/books` - Listar livros
+- `POST /api/books` - Criar livro
+- `GET /api/loans` - Listar empréstimos
+- `POST /api/loans` - Criar empréstimo
+- `GET /api/loans/active` - Empréstimos ativos
+
+Veja `API_DOCUMENTATION.md` para documentação completa.
