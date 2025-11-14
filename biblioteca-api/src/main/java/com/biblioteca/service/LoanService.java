@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,12 +88,20 @@ public class LoanService {
         // Obter prazo de devolução das configurações
         Integer loanPeriodDays = settingsService.getLoanPeriodDays();
 
+        // Definir data de empréstimo (usa a fornecida ou a atual)
+        LocalDateTime loanDateTime = request.getLoanDate() != null
+                ? request.getLoanDate()
+                : LocalDateTime.now();
+
+        // Calcular data de devolução (data de empréstimo + prazo configurado)
+        LocalDateTime dueDateTime = loanDateTime.plusDays(loanPeriodDays);
+
         // Criar empréstimo
         Loan loan = new Loan();
         loan.setStudent(student);
         loan.setBook(book);
-        loan.setLoanDate(LocalDate.now());
-        loan.setDueDate(LocalDate.now().plusDays(loanPeriodDays)); // Prazo configurável
+        loan.setLoanDate(loanDateTime);
+        loan.setDueDate(dueDateTime);
         loan.setStatus(Loan.LoanStatus.ACTIVE);
 
         Loan savedLoan = loanRepository.save(loan);
@@ -117,7 +125,7 @@ public class LoanService {
             throw new RuntimeException("Livro já foi devolvido");
         }
 
-        loan.setReturnDate(LocalDate.now());
+        loan.setReturnDate(LocalDateTime.now());
         loan.setStatus(Loan.LoanStatus.RETURNED);
 
         // Atualizar estoque do livro
@@ -154,8 +162,8 @@ public class LoanService {
      */
     @Transactional
     public List<LoanResponseDTO> checkAndUpdateOverdueLoans() {
-        LocalDate today = LocalDate.now();
-        List<Loan> overdueLoans = loanRepository.findOverdueLoans(today);
+        LocalDateTime now = LocalDateTime.now();
+        List<Loan> overdueLoans = loanRepository.findOverdueLoans(now);
 
         for (Loan loan : overdueLoans) {
             if (loan.getStatus() == Loan.LoanStatus.ACTIVE) {

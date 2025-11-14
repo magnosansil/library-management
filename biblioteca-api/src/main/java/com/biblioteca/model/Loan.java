@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,13 +26,13 @@ public class Loan {
   private Book book;
 
   @Column(name = "loan_date", nullable = false)
-  private LocalDate loanDate;
+  private LocalDateTime loanDate;
 
   @Column(name = "due_date", nullable = false)
-  private LocalDate dueDate;
+  private LocalDateTime dueDate;
 
   @Column(name = "return_date")
-  private LocalDate returnDate;
+  private LocalDateTime returnDate;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)

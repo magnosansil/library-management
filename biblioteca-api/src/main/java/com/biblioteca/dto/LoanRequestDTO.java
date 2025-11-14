@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,4 +16,10 @@ public class LoanRequestDTO {
 
   @NotNull(message = "ISBN do livro é obrigatório")
   private String bookIsbn;
+
+  /**
+   * Data de empréstimo (opcional)
+   * Se não informada, será usada a data/hora atual
+   */
+  private LocalDateTime loanDate;
 }

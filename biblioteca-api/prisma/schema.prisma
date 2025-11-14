@@ -38,8 +38,8 @@ model Loan {
   id            BigInt    @id @default(autoincrement())
   studentMatricula String    @map("student_matricula") @db.VarChar(50)
   bookIsbn      String    @map("book_isbn") @db.VarChar(50)
-  loanDate      DateTime  @map("loan_date")
-  dueDate       DateTime  @map("due_date")
+  loanDate      DateTime  @map("loan_date") // DATETIME - data e hora do empréstimo
+  dueDate       DateTime  @map("due_date") // DATETIME - calculado automaticamente
   returnDate    DateTime? @map("return_date")
   status        String
   createdAt     DateTime  @default(now()) @map("created_at")

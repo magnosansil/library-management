@@ -1,5 +1,6 @@
 package com.biblioteca.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -37,5 +38,6 @@ public class Student {
   private LocalDate dataNascimento;
 
   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore // Evita recursão infinita ao serializar JSON
   private List<Loan> loans = new ArrayList<>();
 }

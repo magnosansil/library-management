@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -17,9 +17,9 @@ public class LoanResponseDTO {
   private String bookIsbn;
   private String bookTitle;
   private String bookAuthor;
-  private LocalDate loanDate;
-  private LocalDate dueDate;
-  private LocalDate returnDate;
+  private LocalDateTime loanDate;
+  private LocalDateTime dueDate;
+  private LocalDateTime returnDate;
   private Loan.LoanStatus status;
 
   public static LoanResponseDTO fromEntity(Loan loan) {
