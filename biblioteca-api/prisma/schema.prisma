@@ -50,4 +50,12 @@ model Loan {
   @@map("loans")
 }
 
+model LibrarySettings {
+  id                  BigInt  @id @default(1)
+  loanPeriodDays      Int     @map("loan_period_days") @default(14)
+  maxLoansPerStudent  Int     @map("max_loans_per_student") @default(3)
+
+  @@map("library_settings")
+}
+
 

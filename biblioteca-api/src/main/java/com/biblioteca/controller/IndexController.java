@@ -25,6 +25,7 @@ public class IndexController {
     Map<String, String> endpoints = new HashMap<>();
     endpoints.put("health", "/api/health");
     endpoints.put("routes", "/api/routes");
+    endpoints.put("settings", "/api/settings");
     endpoints.put("students", "/api/students");
     endpoints.put("books", "/api/books");
     endpoints.put("loans", "/api/loans");

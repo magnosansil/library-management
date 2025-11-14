@@ -23,19 +23,19 @@ public class LoanService {
     private final BookRepository bookRepository;
     private final StudentRepository studentRepository;
     private final NotificationService notificationService;
-
-    // Limite padrão de empréstimos simultâneos por aluno
-    private static final int MAX_LOANS_PER_STUDENT = 3;
+    private final LibrarySettingsService settingsService;
 
     @Autowired
     public LoanService(LoanRepository loanRepository,
             BookRepository bookRepository,
             StudentRepository studentRepository,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            LibrarySettingsService settingsService) {
         this.loanRepository = loanRepository;
         this.bookRepository = bookRepository;
         this.studentRepository = studentRepository;
         this.notificationService = notificationService;
+        this.settingsService = settingsService;
     }
 
     /**
@@ -56,8 +56,9 @@ public class LoanService {
             throw new RuntimeException("Aluno não encontrado");
         }
 
+        Integer maxLoans = settingsService.getMaxLoansPerStudent();
         Long activeLoansCount = studentRepository.countActiveLoansByMatricula(matricula);
-        return activeLoansCount < MAX_LOANS_PER_STUDENT;
+        return activeLoansCount < maxLoans;
     }
 
     /**
@@ -77,18 +78,22 @@ public class LoanService {
         Student student = studentRepository.findById(request.getStudentMatricula())
                 .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
 
+        Integer maxLoans = settingsService.getMaxLoansPerStudent();
         Long activeLoansCount = studentRepository.countActiveLoansByMatricula(request.getStudentMatricula());
-        if (activeLoansCount >= MAX_LOANS_PER_STUDENT) {
+        if (activeLoansCount >= maxLoans) {
             throw new RuntimeException(
-                    "Aluno atingiu o limite máximo de empréstimos simultâneos (" + MAX_LOANS_PER_STUDENT + ")");
+                    "Aluno atingiu o limite máximo de empréstimos simultâneos (" + maxLoans + ")");
         }
+
+        // Obter prazo de devolução das configurações
+        Integer loanPeriodDays = settingsService.getLoanPeriodDays();
 
         // Criar empréstimo
         Loan loan = new Loan();
         loan.setStudent(student);
         loan.setBook(book);
         loan.setLoanDate(LocalDate.now());
-        loan.setDueDate(LocalDate.now().plusDays(14)); // 14 dias para devolução
+        loan.setDueDate(LocalDate.now().plusDays(loanPeriodDays)); // Prazo configurável
         loan.setStatus(Loan.LoanStatus.ACTIVE);
 
         Loan savedLoan = loanRepository.save(loan);

@@ -105,6 +105,17 @@ public class RoutesController {
         "handler", "StudentController.deleteStudent(String matricula)"));
     routes.put("students", studentRoutes);
 
+    // Rotas de Configurações
+    Map<String, Object> settingsRoutes = new HashMap<>();
+    settingsRoutes.put("GET /api/settings", Map.of(
+        "description", "Obter configurações globais da biblioteca",
+        "handler", "LibrarySettingsController.getSettings()"));
+    settingsRoutes.put("PUT /api/settings", Map.of(
+        "description", "Atualizar configurações globais",
+        "handler", "LibrarySettingsController.updateSettings(@RequestBody LibrarySettings settings)",
+        "body", "LibrarySettings { loanPeriodDays, maxLoansPerStudent }"));
+    routes.put("settings", settingsRoutes);
+
     // Rotas de Sistema
     Map<String, Object> systemRoutes = new HashMap<>();
     systemRoutes.put("GET /", Map.of(
