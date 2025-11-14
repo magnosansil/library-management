@@ -1,0 +1,61 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Application specific
+application-local.properties
+.env
+.env.local
+.env.*.local
+
+# Migration scripts 
+**/migration-*.sql
+migration-*.sql
+
+# Test scripts 
+test-*.ps1
+test-*.sh
+test-*.bat
+
+# Spring Boot DevTools
+.spring-boot-devtools.properties
+
+
