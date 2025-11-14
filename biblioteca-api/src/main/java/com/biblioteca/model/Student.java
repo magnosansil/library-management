@@ -40,4 +40,15 @@ public class Student {
   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore // Evita recursão infinita ao serializar JSON
   private List<Loan> loans = new ArrayList<>();
+
+  @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore // Evita recursão infinita ao serializar JSON
+  private List<Reservation> reservations = new ArrayList<>();
+
+  /**
+   * Contador de reservas registradas pelo estudante
+   * Atualizado automaticamente pelo sistema
+   */
+  @Column(name = "reservations_count", nullable = false)
+  private Integer reservationsCount = 0;
 }

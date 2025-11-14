@@ -44,6 +44,17 @@ public class Book {
   @Column(nullable = false)
   private Integer quantity = 0;
 
+  @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+  @com.fasterxml.jackson.annotation.JsonIgnore
+  private java.util.List<Reservation> reservations = new java.util.ArrayList<>();
+
+  /**
+   * Quantidade de reservas ativas para este livro
+   * Atualizado automaticamente pelo sistema
+   */
+  @Column(name = "active_reservations_count", nullable = false)
+  private Integer activeReservationsCount = 0;
+
   @PrePersist
   protected void onCreate() {
     if (entryDate == null) {
