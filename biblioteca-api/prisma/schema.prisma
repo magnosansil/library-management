@@ -24,29 +24,28 @@ model Book {
   @@map("books")
 }
 
-model User {
-  id        BigInt    @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  maxLoans  Int       @default(3) @map("max_loans")
-  createdAt DateTime  @default(now()) @map("created_at")
-  loans     Loan[]
+model Student {
+  matricula      String    @id @db.VarChar(50)
+  nome           String
+  cpf            String    @unique @db.VarChar(11)
+  dataNascimento DateTime  @map("data_nascimento")
+  loans          Loan[]
 
-  @@map("users")
+  @@map("students")
 }
 
 model Loan {
-  id         BigInt    @id @default(autoincrement())
-  userId     BigInt    @map("user_id")
-  bookIsbn   String    @map("book_isbn") @db.VarChar(50)
-  loanDate   DateTime  @map("loan_date")
-  dueDate    DateTime  @map("due_date")
-  returnDate DateTime? @map("return_date")
-  status     String
-  createdAt  DateTime  @default(now()) @map("created_at")
+  id            BigInt    @id @default(autoincrement())
+  studentMatricula String    @map("student_matricula") @db.VarChar(50)
+  bookIsbn      String    @map("book_isbn") @db.VarChar(50)
+  loanDate      DateTime  @map("loan_date")
+  dueDate       DateTime  @map("due_date")
+  returnDate    DateTime? @map("return_date")
+  status        String
+  createdAt     DateTime  @default(now()) @map("created_at")
 
-  user       User      @relation(fields: [userId], references: [id])
-  book       Book      @relation(fields: [bookIsbn], references: [isbn])
+  student       Student   @relation(fields: [studentMatricula], references: [matricula])
+  book          Book      @relation(fields: [bookIsbn], references: [isbn])
 
   @@map("loans")
 }

@@ -4,10 +4,10 @@ import com.biblioteca.dto.LoanRequestDTO;
 import com.biblioteca.dto.LoanResponseDTO;
 import com.biblioteca.model.Book;
 import com.biblioteca.model.Loan;
-import com.biblioteca.model.User;
+import com.biblioteca.model.Student;
 import com.biblioteca.repository.BookRepository;
 import com.biblioteca.repository.LoanRepository;
-import com.biblioteca.repository.UserRepository;
+import com.biblioteca.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,17 +21,20 @@ public class LoanService {
 
     private final LoanRepository loanRepository;
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
     private final NotificationService notificationService;
+
+    // Limite padrão de empréstimos simultâneos por aluno
+    private static final int MAX_LOANS_PER_STUDENT = 3;
 
     @Autowired
     public LoanService(LoanRepository loanRepository,
             BookRepository bookRepository,
-            UserRepository userRepository,
+            StudentRepository studentRepository,
             NotificationService notificationService) {
         this.loanRepository = loanRepository;
         this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
         this.notificationService = notificationService;
     }
 
@@ -45,14 +48,16 @@ public class LoanService {
     }
 
     /**
-     * Verifica se o usuário pode fazer mais empréstimos
+     * Verifica se o aluno pode fazer mais empréstimos
      */
-    public boolean canUserBorrow(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    public boolean canStudentBorrow(String matricula) {
+        // Verificar se o aluno existe
+        if (!studentRepository.existsById(matricula)) {
+            throw new RuntimeException("Aluno não encontrado");
+        }
 
-        Long activeLoansCount = userRepository.countActiveLoansByUserId(userId);
-        return activeLoansCount < user.getMaxLoans();
+        Long activeLoansCount = studentRepository.countActiveLoansByMatricula(matricula);
+        return activeLoansCount < MAX_LOANS_PER_STUDENT;
     }
 
     /**
@@ -68,18 +73,19 @@ public class LoanService {
             throw new RuntimeException("Livro não disponível para empréstimo");
         }
 
-        // Verificar limite de empréstimos do usuário
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        // Verificar limite de empréstimos do aluno
+        Student student = studentRepository.findById(request.getStudentMatricula())
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
 
-        Long activeLoansCount = userRepository.countActiveLoansByUserId(request.getUserId());
-        if (activeLoansCount >= user.getMaxLoans()) {
-            throw new RuntimeException("Usuário atingiu o limite máximo de empréstimos simultâneos");
+        Long activeLoansCount = studentRepository.countActiveLoansByMatricula(request.getStudentMatricula());
+        if (activeLoansCount >= MAX_LOANS_PER_STUDENT) {
+            throw new RuntimeException(
+                    "Aluno atingiu o limite máximo de empréstimos simultâneos (" + MAX_LOANS_PER_STUDENT + ")");
         }
 
         // Criar empréstimo
         Loan loan = new Loan();
-        loan.setUser(user);
+        loan.setStudent(student);
         loan.setBook(book);
         loan.setLoanDate(LocalDate.now());
         loan.setDueDate(LocalDate.now().plusDays(14)); // 14 dias para devolução
@@ -129,10 +135,10 @@ public class LoanService {
     }
 
     /**
-     * Obtém empréstimos ativos de um usuário
+     * Obtém empréstimos ativos de um aluno
      */
-    public List<LoanResponseDTO> getActiveLoansByUser(Long userId) {
-        List<Loan> activeLoans = loanRepository.findActiveLoansByUserId(userId);
+    public List<LoanResponseDTO> getActiveLoansByStudent(String matricula) {
+        List<Loan> activeLoans = loanRepository.findActiveLoansByMatricula(matricula);
         return activeLoans.stream()
                 .map(LoanResponseDTO::fromEntity)
                 .collect(Collectors.toList());

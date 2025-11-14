@@ -57,15 +57,15 @@ public class RoutesController {
     loanRoutes.put("GET /api/loans/active", Map.of(
         "description", "Listar empréstimos ativos",
         "handler", "LoanController.getActiveLoans()"));
-    loanRoutes.put("GET /api/loans/active/user/{userId}", Map.of(
-        "description", "Empréstimos ativos de um usuário",
-        "handler", "LoanController.getActiveLoansByUser(Long userId)"));
+    loanRoutes.put("GET /api/loans/active/student/{matricula}", Map.of(
+        "description", "Empréstimos ativos de um aluno",
+        "handler", "LoanController.getActiveLoansByStudent(String matricula)"));
     loanRoutes.put("GET /api/loans/books/{isbn}/availability", Map.of(
         "description", "Verificar disponibilidade antes de emprestar",
         "handler", "LoanController.checkBookAvailability(String isbn)"));
-    loanRoutes.put("GET /api/loans/users/{userId}/can-borrow", Map.of(
-        "description", "Verificar se usuário pode emprestar",
-        "handler", "LoanController.canUserBorrow(Long userId)"));
+    loanRoutes.put("GET /api/loans/students/{matricula}/can-borrow", Map.of(
+        "description", "Verificar se aluno pode emprestar",
+        "handler", "LoanController.canStudentBorrow(String matricula)"));
     loanRoutes.put("GET /api/loans/check-overdue", Map.of(
         "description", "Verificar e atualizar empréstimos em atraso",
         "handler", "LoanController.checkOverdueLoans()"));
@@ -75,31 +75,35 @@ public class RoutesController {
     loanRoutes.put("POST /api/loans", Map.of(
         "description", "Criar novo empréstimo",
         "handler", "LoanController.createLoan(@RequestBody LoanRequestDTO request)",
-        "body", "LoanRequestDTO { userId, bookIsbn }"));
+        "body", "LoanRequestDTO { studentMatricula, bookIsbn }"));
     loanRoutes.put("PUT /api/loans/{loanId}/return", Map.of(
         "description", "Registrar devolução de livro",
         "handler", "LoanController.returnLoan(Long loanId)"));
     routes.put("loans", loanRoutes);
 
-    // Rotas de Usuários
-    Map<String, Object> userRoutes = new HashMap<>();
-    userRoutes.put("GET /api/users", Map.of(
-        "description", "Listar todos os usuários",
-        "handler", "UserController.getAllUsers()"));
-    userRoutes.put("GET /api/users/{id}", Map.of(
-        "description", "Buscar usuário por ID",
-        "handler", "UserController.getUserById(Long id)"));
-    userRoutes.put("POST /api/users", Map.of(
-        "description", "Criar novo usuário",
-        "handler", "UserController.createUser(@RequestBody User user)",
-        "body", "User { name, email, maxLoans }"));
-    userRoutes.put("PUT /api/users/{id}", Map.of(
-        "description", "Atualizar usuário",
-        "handler", "UserController.updateUser(Long id, @RequestBody User user)"));
-    userRoutes.put("DELETE /api/users/{id}", Map.of(
-        "description", "Excluir usuário",
-        "handler", "UserController.deleteUser(Long id)"));
-    routes.put("users", userRoutes);
+    // Rotas de Alunos
+    Map<String, Object> studentRoutes = new HashMap<>();
+    studentRoutes.put("GET /api/students", Map.of(
+        "description", "Listar todos os alunos",
+        "handler", "StudentController.getAllStudents()"));
+    studentRoutes.put("GET /api/students/{matricula}", Map.of(
+        "description", "Buscar aluno por matrícula",
+        "handler", "StudentController.getStudentByMatricula(String matricula)"));
+    studentRoutes.put("POST /api/students", Map.of(
+        "description", "Criar novo aluno (um por vez)",
+        "handler", "StudentController.createStudent(@RequestBody Student student)",
+        "body", "Student { matricula, nome, cpf, dataNascimento }"));
+    studentRoutes.put("POST /api/students/batch", Map.of(
+        "description", "Criar múltiplos alunos de uma vez (array)",
+        "handler", "StudentController.createStudentsBatch(@RequestBody List<Student> students)",
+        "body", "Array de Student [{ matricula, nome, cpf, dataNascimento }, ...]"));
+    studentRoutes.put("PUT /api/students/{matricula}", Map.of(
+        "description", "Atualizar aluno",
+        "handler", "StudentController.updateStudent(String matricula, @RequestBody Student student)"));
+    studentRoutes.put("DELETE /api/students/{matricula}", Map.of(
+        "description", "Excluir aluno por matrícula",
+        "handler", "StudentController.deleteStudent(String matricula)"));
+    routes.put("students", studentRoutes);
 
     // Rotas de Sistema
     Map<String, Object> systemRoutes = new HashMap<>();

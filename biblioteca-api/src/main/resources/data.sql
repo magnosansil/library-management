@@ -1,12 +1,27 @@
 -- Script SQL para popular dados iniciais (opcional)
 -- Este arquivo será executado automaticamente pelo Spring Boot se spring.jpa.hibernate.ddl-auto=create ou create-drop
--- Inserir usuários de exemplo
+-- Inserir alunos de exemplo
 INSERT INTO
-  users (name, email, max_loans, created_at)
+  students (matricula, nome, cpf, data_nascimento)
 VALUES
-  ('João Silva', 'joao@email.com', 3, NOW()),
-  ('Maria Santos', 'maria@email.com', 5, NOW()),
-  ('Pedro Oliveira', 'pedro@email.com', 3, NOW());
+  (
+    '2024001',
+    'João Silva',
+    '12345678901',
+    '2000-05-15'
+  ),
+  (
+    '2024002',
+    'Maria Santos',
+    '98765432100',
+    '2001-08-20'
+  ),
+  (
+    '2024003',
+    'Pedro Oliveira',
+    '11122233344',
+    '1999-12-10'
+  );
 
 -- Inserir livros de exemplo
 INSERT INTO

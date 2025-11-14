@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class LoanResponseDTO {
   private Long id;
-  private Long userId;
-  private String userName;
+  private String studentMatricula;
+  private String studentName;
   private String bookIsbn;
   private String bookTitle;
   private String bookAuthor;
@@ -25,8 +25,8 @@ public class LoanResponseDTO {
   public static LoanResponseDTO fromEntity(Loan loan) {
     LoanResponseDTO dto = new LoanResponseDTO();
     dto.setId(loan.getId());
-    dto.setUserId(loan.getUser().getId());
-    dto.setUserName(loan.getUser().getName());
+    dto.setStudentMatricula(loan.getStudent().getMatricula());
+    dto.setStudentName(loan.getStudent().getNome());
     dto.setBookIsbn(loan.getBook().getIsbn());
     dto.setBookTitle(loan.getBook().getTitle());
     dto.setBookAuthor(loan.getBook().getAuthor());

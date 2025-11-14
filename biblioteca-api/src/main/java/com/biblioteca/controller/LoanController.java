@@ -38,13 +38,13 @@ public class LoanController {
   }
 
   /**
-   * Verificar se usuário pode fazer mais empréstimos
-   * GET /api/loans/users/{userId}/can-borrow
+   * Verificar se aluno pode fazer mais empréstimos
+   * GET /api/loans/students/{matricula}/can-borrow
    */
-  @GetMapping("/users/{userId}/can-borrow")
-  public ResponseEntity<Boolean> canUserBorrow(@PathVariable Long userId) {
+  @GetMapping("/students/{matricula}/can-borrow")
+  public ResponseEntity<Boolean> canStudentBorrow(@PathVariable String matricula) {
     try {
-      boolean canBorrow = loanService.canUserBorrow(userId);
+      boolean canBorrow = loanService.canStudentBorrow(matricula);
       return ResponseEntity.ok(canBorrow);
     } catch (RuntimeException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
@@ -92,12 +92,12 @@ public class LoanController {
   }
 
   /**
-   * Obter empréstimos ativos de um usuário
-   * GET /api/loans/active/user/{userId}
+   * Obter empréstimos ativos de um aluno
+   * GET /api/loans/active/student/{matricula}
    */
-  @GetMapping("/active/user/{userId}")
-  public ResponseEntity<List<LoanResponseDTO>> getActiveLoansByUser(@PathVariable Long userId) {
-    List<LoanResponseDTO> loans = loanService.getActiveLoansByUser(userId);
+  @GetMapping("/active/student/{matricula}")
+  public ResponseEntity<List<LoanResponseDTO>> getActiveLoansByStudent(@PathVariable String matricula) {
+    List<LoanResponseDTO> loans = loanService.getActiveLoansByStudent(matricula);
     return ResponseEntity.ok(loans);
   }
 

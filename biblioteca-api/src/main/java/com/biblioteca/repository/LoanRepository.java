@@ -11,13 +11,13 @@ import java.util.List;
 
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Long> {
-    List<Loan> findByUserIdAndStatus(Long userId, Loan.LoanStatus status);
+    List<Loan> findByStudentMatriculaAndStatus(String matricula, Loan.LoanStatus status);
 
     List<Loan> findByStatus(Loan.LoanStatus status);
 
     @Query("SELECT l FROM Loan l WHERE l.status = 'ACTIVE' AND l.dueDate < :currentDate")
     List<Loan> findOverdueLoans(@Param("currentDate") LocalDate currentDate);
 
-    @Query("SELECT l FROM Loan l WHERE l.user.id = :userId AND l.status = 'ACTIVE'")
-    List<Loan> findActiveLoansByUserId(@Param("userId") Long userId);
+    @Query("SELECT l FROM Loan l WHERE l.student.matricula = :matricula AND l.status = 'ACTIVE'")
+    List<Loan> findActiveLoansByMatricula(@Param("matricula") String matricula);
 }
