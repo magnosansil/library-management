@@ -1,0 +1,54 @@
+// Prisma Schema para Biblioteca API
+// Este schema pode ser usado para gerenciar o banco de dados independentemente do JPA
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  isbn            String    @id @db.VarChar(50)
+  title           String
+  author          String
+  coverImageUrl   String?   @map("cover_image_url") @db.VarChar(500)
+  keywords        String?   @db.VarChar(500)
+  synopsis        String?   @db.Text
+  entryDate       DateTime  @default(now()) @map("entry_date")
+  quantity        Int       @default(0)
+  loans           Loan[]
+
+  @@map("books")
+}
+
+model User {
+  id        BigInt    @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  maxLoans  Int       @default(3) @map("max_loans")
+  createdAt DateTime  @default(now()) @map("created_at")
+  loans     Loan[]
+
+  @@map("users")
+}
+
+model Loan {
+  id         BigInt    @id @default(autoincrement())
+  userId     BigInt    @map("user_id")
+  bookIsbn   String    @map("book_isbn") @db.VarChar(50)
+  loanDate   DateTime  @map("loan_date")
+  dueDate    DateTime  @map("due_date")
+  returnDate DateTime? @map("return_date")
+  status     String
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user       User      @relation(fields: [userId], references: [id])
+  book       Book      @relation(fields: [bookIsbn], references: [isbn])
+
+  @@map("loans")
+}
+
+
