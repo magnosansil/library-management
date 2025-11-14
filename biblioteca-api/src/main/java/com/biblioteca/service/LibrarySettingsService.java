@@ -32,6 +32,7 @@ public class LibrarySettingsService {
       defaultSettings.setId(SETTINGS_ID);
       defaultSettings.setLoanPeriodDays(14);
       defaultSettings.setMaxLoansPerStudent(3);
+      defaultSettings.setFinePerDay(100);
       settingsRepository.save(defaultSettings);
     }
   }
@@ -47,6 +48,7 @@ public class LibrarySettingsService {
           defaultSettings.setId(SETTINGS_ID);
           defaultSettings.setLoanPeriodDays(14);
           defaultSettings.setMaxLoansPerStudent(3);
+          defaultSettings.setFinePerDay(100);
           return settingsRepository.save(defaultSettings);
         });
   }
@@ -59,6 +61,7 @@ public class LibrarySettingsService {
     LibrarySettings currentSettings = getSettings();
     currentSettings.setLoanPeriodDays(newSettings.getLoanPeriodDays());
     currentSettings.setMaxLoansPerStudent(newSettings.getMaxLoansPerStudent());
+    currentSettings.setFinePerDay(newSettings.getFinePerDay());
     return settingsRepository.save(currentSettings);
   }
 
@@ -74,5 +77,12 @@ public class LibrarySettingsService {
    */
   public Integer getMaxLoansPerStudent() {
     return getSettings().getMaxLoansPerStudent();
+  }
+
+  /**
+   * Obtém a multa por dia de atraso
+   */
+  public Integer getFinePerDay() {
+    return getSettings().getFinePerDay();
   }
 }

@@ -39,6 +39,15 @@ public class LibrarySettings {
   private Integer maxLoansPerStudent = 3; // Padrão: 3 empréstimos
 
   /**
+   * Multa por dia de atraso (em centavos ou unidade mínima de moeda)
+   * A formatação para dinheiro será feita no front-end
+   */
+  @NotNull(message = "Multa por dia é obrigatória")
+  @Min(value = 0, message = "Multa por dia não pode ser negativa")
+  @Column(name = "fine_per_day", nullable = false)
+  private Integer finePerDay = 100; // Padrão: 100 (centavos ou unidade mínima)
+
+  /**
    * Garantir que sempre existe apenas uma instância
    */
   @PrePersist

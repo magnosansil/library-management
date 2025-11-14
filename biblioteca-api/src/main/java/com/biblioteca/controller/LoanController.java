@@ -2,6 +2,7 @@ package com.biblioteca.controller;
 
 import com.biblioteca.dto.LoanRequestDTO;
 import com.biblioteca.dto.LoanResponseDTO;
+import com.biblioteca.dto.LoanReturnDTO;
 import com.biblioteca.service.LoanService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,11 +70,16 @@ public class LoanController {
   /**
    * Registrar devolução de livro
    * PUT /api/loans/{loanId}/return
+   * 
+   * Body opcional: { "returnDate": "2024-01-15T10:30:00" }
+   * Se não informado, usa a data/hora atual
    */
   @PutMapping("/{loanId}/return")
-  public ResponseEntity<?> returnLoan(@PathVariable Long loanId) {
+  public ResponseEntity<?> returnLoan(
+      @PathVariable Long loanId,
+      @RequestBody(required = false) LoanReturnDTO returnDTO) {
     try {
-      LoanResponseDTO loan = loanService.returnLoan(loanId);
+      LoanResponseDTO loan = loanService.returnLoan(loanId, returnDTO);
       return ResponseEntity.ok(loan);
     } catch (RuntimeException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -77,8 +77,9 @@ public class RoutesController {
         "handler", "LoanController.createLoan(@RequestBody LoanRequestDTO request)",
         "body", "LoanRequestDTO { studentMatricula, bookIsbn }"));
     loanRoutes.put("PUT /api/loans/{loanId}/return", Map.of(
-        "description", "Registrar devolução de livro",
-        "handler", "LoanController.returnLoan(Long loanId)"));
+        "description", "Registrar devolução de livro (data de devolução opcional no body)",
+        "handler", "LoanController.returnLoan(Long loanId, LoanReturnDTO returnDTO)",
+        "body", "LoanReturnDTO { returnDate (opcional) } - Se não informado, usa data atual"));
     routes.put("loans", loanRoutes);
 
     // Rotas de Alunos

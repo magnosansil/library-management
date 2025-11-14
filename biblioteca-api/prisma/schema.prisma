@@ -42,6 +42,8 @@ model Loan {
   dueDate       DateTime  @map("due_date") // DATETIME - calculado automaticamente
   returnDate    DateTime? @map("return_date")
   status        String
+  overdueDays   Int?      @map("overdue_days") // Dias de atraso (calculado na devolução)
+  fineAmount    Int?      @map("fine_amount") // Valor da multa em centavos (calculado na devolução)
   createdAt     DateTime  @default(now()) @map("created_at")
 
   student       Student   @relation(fields: [studentMatricula], references: [matricula])
@@ -54,6 +56,7 @@ model LibrarySettings {
   id                  BigInt  @id @default(1)
   loanPeriodDays      Int     @map("loan_period_days") @default(14)
   maxLoansPerStudent  Int     @map("max_loans_per_student") @default(3)
+  finePerDay          Int     @map("fine_per_day") @default(100) // Multa por dia de atraso (em centavos)
 
   @@map("library_settings")
 }

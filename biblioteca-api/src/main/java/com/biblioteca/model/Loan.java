@@ -38,6 +38,21 @@ public class Loan {
   @Column(nullable = false)
   private LoanStatus status = LoanStatus.ACTIVE;
 
+  /**
+   * Dias de atraso (calculado na devolução)
+   * Null se não houver atraso ou se ainda não foi devolvido
+   */
+  @Column(name = "overdue_days")
+  private Integer overdueDays;
+
+  /**
+   * Valor da multa (em centavos ou unidade mínima de moeda)
+   * Calculado como: overdueDays * finePerDay (das configurações)
+   * Null se não houver multa ou se ainda não foi devolvido
+   */
+  @Column(name = "fine_amount")
+  private Integer fineAmount;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 

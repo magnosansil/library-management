@@ -21,6 +21,8 @@ public class LoanResponseDTO {
   private LocalDateTime dueDate;
   private LocalDateTime returnDate;
   private Loan.LoanStatus status;
+  private Integer overdueDays;
+  private Integer fineAmount;
 
   public static LoanResponseDTO fromEntity(Loan loan) {
     LoanResponseDTO dto = new LoanResponseDTO();
@@ -34,6 +36,8 @@ public class LoanResponseDTO {
     dto.setDueDate(loan.getDueDate());
     dto.setReturnDate(loan.getReturnDate());
     dto.setStatus(loan.getStatus());
+    dto.setOverdueDays(loan.getOverdueDays());
+    dto.setFineAmount(loan.getFineAmount());
     return dto;
   }
 }

@@ -2,6 +2,7 @@ package com.biblioteca.service;
 
 import com.biblioteca.dto.LoanRequestDTO;
 import com.biblioteca.dto.LoanResponseDTO;
+import com.biblioteca.dto.LoanReturnDTO;
 import com.biblioteca.model.Book;
 import com.biblioteca.model.Loan;
 import com.biblioteca.model.Student;
@@ -115,9 +116,15 @@ public class LoanService {
 
     /**
      * Registra devolução de livro
+     * Calcula automaticamente os dias de atraso e o valor da multa
+     * 
+     * @param loanId    ID do empréstimo
+     * @param returnDTO DTO com data de devolução (opcional). Se null ou sem
+     *                  returnDate, usa data atual
+     * @return DTO com os dados do empréstimo atualizado
      */
     @Transactional
-    public LoanResponseDTO returnLoan(Long loanId) {
+    public LoanResponseDTO returnLoan(Long loanId, LoanReturnDTO returnDTO) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Empréstimo não encontrado"));
 
@@ -125,8 +132,31 @@ public class LoanService {
             throw new RuntimeException("Livro já foi devolvido");
         }
 
-        loan.setReturnDate(LocalDateTime.now());
+        // Usar data fornecida ou data atual se não fornecida
+        LocalDateTime returnDate = (returnDTO != null && returnDTO.getReturnDate() != null)
+                ? returnDTO.getReturnDate()
+                : LocalDateTime.now();
+
+        loan.setReturnDate(returnDate);
         loan.setStatus(Loan.LoanStatus.RETURNED);
+
+        // Calcular dias de atraso (diferença entre data de devolução e data de
+        // vencimento)
+        LocalDateTime dueDate = loan.getDueDate();
+        long daysDifference = java.time.Duration.between(dueDate, returnDate).toDays();
+
+        if (daysDifference > 0) {
+            // Há atraso
+            loan.setOverdueDays((int) daysDifference);
+
+            // Calcular valor da multa: dias de atraso * multa por dia (das configurações)
+            Integer finePerDay = settingsService.getFinePerDay();
+            loan.setFineAmount((int) daysDifference * finePerDay);
+        } else {
+            // Sem atraso
+            loan.setOverdueDays(0);
+            loan.setFineAmount(0);
+        }
 
         // Atualizar estoque do livro
         Book book = loan.getBook();
