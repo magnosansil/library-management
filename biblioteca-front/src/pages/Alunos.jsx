@@ -124,6 +124,18 @@ export default function Alunos() {
   const saveStudent = async () => {
     try {
       setSaving(true);
+
+      if (!editForm.email || editForm.email.trim() === "") {
+        alert("E-mail é obrigatório");
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(editForm.email.trim())) {
+        alert("E-mail deve ter um formato válido");
+        return;
+      }
+
       const res = await fetch(
         `${API_BASE_URL}/students/${editForm.matricula}`,
         {
@@ -134,21 +146,39 @@ export default function Alunos() {
             nome: editForm.nome,
             cpf: editForm.cpf,
             dataNascimento: editForm.dataNascimento,
-            email: editForm.email,
-            telefone: editForm.telefone,
+            email: editForm.email.trim(),
+            telefone: editForm.telefone || null,
           }),
         }
       );
+
       if (res.ok) {
         await fetchStudents();
         setEditingMatricula(null);
       } else {
-        const msg = await res.text();
-        alert(`Erro ao salvar aluno: ${msg}`);
+        let errorMsg = "Erro ao salvar aluno";
+        try {
+          const text = await res.text();
+          if (text) {
+            errorMsg = text;
+          } else if (res.status === 409) {
+            errorMsg = "E-mail já está em uso por outro aluno";
+          } else if (res.status === 400) {
+            errorMsg =
+              "Dados inválidos. Verifique se todos os campos estão preenchidos corretamente";
+          } else if (res.status === 404) {
+            errorMsg = "Aluno não encontrado";
+          }
+        } catch (e) {
+          if (res.status === 409) {
+            errorMsg = "E-mail já está em uso por outro aluno";
+          }
+        }
+        alert(errorMsg);
       }
     } catch (e) {
       console.error("Erro ao salvar aluno:", e);
-      alert("Erro ao salvar aluno");
+      alert("Erro ao salvar aluno. Verifique sua conexão e tente novamente.");
     } finally {
       setSaving(false);
     }
