@@ -12,6 +12,8 @@ import Devolucoes from "./pages/Devolucoes";
 import Historico from "./pages/Historico";
 import Atrasos from "./pages/Atrasos";
 import NovoAluno from "./pages/NovoAluno";
+import NovoEmprestimo from "./pages/NovoEmprestimo";
+import EditarEmprestimo from "./pages/EditarEmprestimo";
 
 function App() {
   return (
@@ -26,6 +28,11 @@ function App() {
           <Route path="/alunos" element={<Alunos />} />
           <Route path="/alunos/novo" element={<NovoAluno />} />
           <Route path="/emprestimos" element={<Emprestimos />} />
+          <Route path="/emprestimos/novo" element={<NovoEmprestimo />} />
+          <Route
+            path="/emprestimos/:id/editar"
+            element={<EditarEmprestimo />}
+          />
           <Route path="/reservas" element={<Reservas />} />
           <Route path="/devolucoes" element={<Devolucoes />} />
           <Route path="/historico" element={<Historico />} />
