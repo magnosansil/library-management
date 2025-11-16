@@ -228,7 +228,7 @@ export default function Emprestimos() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-start">
+                  <div className="flex flex-col items-end gap-2">
                     <span
                       className={`text-xs font-medium px-2 py-1 rounded-md border ${
                         loan.status === "OVERDUE"
@@ -245,6 +245,26 @@ export default function Emprestimos() {
                         ? "Devolvido"
                         : "Ativo"}
                     </span>
+
+                    {loan.status === "RETURNED" && loan.overdueDays > 0 && (
+                      <span className="text-xs font-medium px-2 py-1 rounded-md border bg-amber-50 text-amber-700 border-amber-200">
+                        Entregue com atraso
+                      </span>
+                    )}
+
+                    {loan.status === "RETURNED" &&
+                      loan.fineStatus === "PAID" && (
+                        <span className="text-xs font-medium px-2 py-1 rounded-md border bg-emerald-50 text-emerald-700 border-emerald-200">
+                          Multa paga
+                        </span>
+                      )}
+
+                    {loan.status === "RETURNED" &&
+                      loan.fineStatus === "FORGIVEN" && (
+                        <span className="text-xs font-medium px-2 py-1 rounded-md border bg-blue-50 text-blue-700 border-blue-200">
+                          Multa perdoada
+                        </span>
+                      )}
                   </div>
                 </div>
 

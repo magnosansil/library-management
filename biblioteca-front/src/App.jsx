@@ -15,6 +15,7 @@ import EditarEmprestimo from "./pages/EditarEmprestimo";
 import Configuracoes from "./pages/Configuracoes";
 import NovaReserva from "./pages/NovaReserva";
 import DetalhesReserva from "./pages/DetalhesReserva";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path="/historico" element={<Historico />} />
           <Route path="/atrasos" element={<Atrasos />} />
         </Routes>
+        <Toaster />
       </Layout>
     </Router>
   );

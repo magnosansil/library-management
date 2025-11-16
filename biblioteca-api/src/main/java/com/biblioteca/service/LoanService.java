@@ -38,10 +38,13 @@ public class LoanService {
 
         /**
          * Atualiza o status do empréstimo automaticamente baseado nas datas
+         * Calcula automaticamente os dias de atraso e o valor da multa quando fica em
+         * atraso
          * 
          * Regras:
          * - Se returnDate != null → RETURNED
-         * - Se returnDate == null && dueDate < now → OVERDUE
+         * - Se returnDate == null && dueDate < now → OVERDUE (calcula dias de atraso e
+         * multa)
          * - Se returnDate == null && dueDate >= now → ACTIVE
          * 
          * @param loan Empréstimo a ser atualizado
@@ -60,10 +63,33 @@ public class LoanService {
                 // Se não foi devolvido e a data de vencimento passou, está em atraso
                 else if (loan.getDueDate().isBefore(now)) {
                         newStatus = Loan.LoanStatus.OVERDUE;
+
+                        // Calcular dias de atraso e multa automaticamente
+                        long daysDifference = java.time.Duration.between(loan.getDueDate(), now).toDays();
+
+                        if (daysDifference > 0) {
+                                loan.setOverdueDays((int) daysDifference);
+
+                                // Calcular valor da multa: dias de atraso * multa por dia (das configurações)
+                                Integer finePerDay = settingsService.getFinePerDay();
+                                loan.setFineAmount((int) daysDifference * finePerDay);
+
+                                // Se ainda não tem status de multa definido, definir como pendente
+                                if (loan.getFineStatus() == null) {
+                                        loan.setFineStatus(Loan.FineStatus.PENDING);
+                                }
+                        }
                 }
                 // Se não foi devolvido e ainda não venceu, está ativo
                 else {
                         newStatus = Loan.LoanStatus.ACTIVE;
+                        // Se voltou para ativo, limpar dias de atraso e multa (não deveria acontecer
+                        // normalmente)
+                        if (currentStatus == Loan.LoanStatus.OVERDUE) {
+                                loan.setOverdueDays(0);
+                                loan.setFineAmount(0);
+                                loan.setFineStatus(null);
+                        }
                 }
 
                 // Atualizar status se mudou
@@ -71,6 +97,22 @@ public class LoanService {
                         loan.setStatus(newStatus);
                         loanRepository.save(loan);
                         return true;
+                } else if (newStatus == Loan.LoanStatus.OVERDUE) {
+                        // Mesmo que o status não tenha mudado, recalcular dias de atraso e multa se
+                        // estiver em atraso
+                        long daysDifference = java.time.Duration.between(loan.getDueDate(), now).toDays();
+                        if (daysDifference > 0
+                                        && (loan.getOverdueDays() == null || loan.getOverdueDays() != daysDifference)) {
+                                loan.setOverdueDays((int) daysDifference);
+                                Integer finePerDay = settingsService.getFinePerDay();
+                                loan.setFineAmount((int) daysDifference * finePerDay);
+
+                                // Se ainda não tem status de multa definido, definir como pendente
+                                if (loan.getFineStatus() == null) {
+                                        loan.setFineStatus(Loan.FineStatus.PENDING);
+                                }
+                                loanRepository.save(loan);
+                        }
                 }
 
                 return false;
@@ -241,8 +283,12 @@ public class LoanService {
                         // Calcular valor da multa: dias de atraso * multa por dia (das configurações)
                         Integer finePerDay = settingsService.getFinePerDay();
                         loan.setFineAmount((int) daysDifference * finePerDay);
-                        // Definir status da multa como pendente
-                        loan.setFineStatus(Loan.FineStatus.PENDING);
+                        // Definir status da multa como pendente apenas se ainda não foi definido (não
+                        // foi perdoada nem paga antes)
+                        if (loan.getFineStatus() == null) {
+                                loan.setFineStatus(Loan.FineStatus.PENDING);
+                        }
+                        // Se já foi perdoada (FORGIVEN) ou paga (PAID), mantém o status existente
                 } else {
                         // Sem atraso
                         loan.setOverdueDays(0);
