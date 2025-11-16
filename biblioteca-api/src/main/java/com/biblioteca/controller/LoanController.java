@@ -25,6 +25,20 @@ public class LoanController {
   }
 
   /**
+   * Buscar empréstimo por ID
+   * GET /api/loans/{loanId}
+   */
+  @GetMapping("/{loanId}")
+  public ResponseEntity<LoanResponseDTO> getLoanById(@PathVariable Long loanId) {
+    try {
+      LoanResponseDTO loan = loanService.getLoanById(loanId);
+      return ResponseEntity.ok(loan);
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+  }
+
+  /**
    * Verificar disponibilidade de livro antes de emprestar (READ)
    * GET /api/loans/books/{isbn}/availability
    */
@@ -84,6 +98,20 @@ public class LoanController {
     } catch (RuntimeException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body("Erro ao devolver livro: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Excluir empréstimo por ID
+   * DELETE /api/loans/{loanId}
+   */
+  @DeleteMapping("/{loanId}")
+  public ResponseEntity<Void> deleteLoan(@PathVariable Long loanId) {
+    try {
+      loanService.deleteLoan(loanId);
+      return ResponseEntity.noContent().build();
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
   }
 
