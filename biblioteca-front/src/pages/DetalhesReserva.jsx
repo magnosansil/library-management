@@ -160,16 +160,11 @@ export default function DetalhesReserva() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">
+          <h1 className="text-xl sm:text-2xl font-semibold">
             Detalhes das Reservas
           </h1>
           <p className="text-sm text-muted-foreground mt-1">{book.title}</p>
         </div>
-        <Link to="/reservas">
-          <Button variant="secondary">
-            <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
-          </Button>
-        </Link>
       </div>
 
       {error && (

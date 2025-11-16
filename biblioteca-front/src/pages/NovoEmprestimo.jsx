@@ -255,7 +255,7 @@ export default function NovoEmprestimo() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold">Novo Empréstimo</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold">Novo Empréstimo</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Registre um novo empréstimo
         </p>

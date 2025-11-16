@@ -11,7 +11,7 @@ export default function Atrasos() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold">Atrasos e Multas</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold">Atrasos e Multas</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">
           Visualize empréstimos em atraso e calcule multas
         </p>

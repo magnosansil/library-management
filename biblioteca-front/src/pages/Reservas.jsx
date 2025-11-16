@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, BookOpen, ChevronRight } from "lucide-react";
+import { Plus, BookOpen, ChevronRight } from "lucide-react";
 
 export default function Reservas() {
   const [reservations, setReservations] = useState([]);
@@ -17,7 +17,6 @@ export default function Reservas() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [statusFilter, setStatusFilter] = useState("ACTIVE");
   const [sortOrder, setSortOrder] = useState("TITLE_ASC");
 
   const fetchReservations = useCallback(async () => {
@@ -56,10 +55,7 @@ export default function Reservas() {
   }, [fetchReservations, fetchBooks]);
 
   const groupedReservations = useMemo(() => {
-    const filtered =
-      statusFilter === "ALL"
-        ? reservations
-        : reservations.filter((r) => r.status === statusFilter);
+    const filtered = reservations.filter((r) => r.status === "ACTIVE");
 
     const grouped = {};
     filtered.forEach((r) => {
@@ -91,7 +87,7 @@ export default function Reservas() {
     });
 
     return list;
-  }, [reservations, statusFilter, sortOrder]);
+  }, [reservations, sortOrder]);
 
   const getBookImage = (isbn) => {
     const book = books.find((b) => b.isbn === isbn);
@@ -102,7 +98,7 @@ export default function Reservas() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
-          <h1 className="text-2xl sm:text-3xl font-bold">Reservas</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">Reservas Ativas</h1>
           <Link to="/reservas/nova">
             <Button className="bg-primary text-sm text-primary-foreground">
               <Plus className="h-4 w-4 mr-2" /> Nova Reserva
@@ -113,17 +109,6 @@ export default function Reservas() {
 
       <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3">
-          <select
-            className="h-9 rounded-md border bg-background px-3 text-xs"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="ALL">Todos os status</option>
-            <option value="ACTIVE">Ativas</option>
-            <option value="CANCELLED">Canceladas</option>
-            <option value="FULFILLED">Efetivadas</option>
-          </select>
-
           <select
             className="h-9 rounded-md border bg-background px-3 text-xs"
             value={sortOrder}
@@ -233,14 +218,6 @@ export default function Reservas() {
                   </div>
 
                   <div className="flex flex-col items-end justify-between gap-2">
-                    <Link to={`/reservas/${group.isbn}/detalhes`}>
-                      <Button
-                        size="sm"
-                        className="h-9 w-9 p-0 bg-primary text-primary-foreground hover:bg-primary/90"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </Link>
                     <Link to={`/reservas/${group.isbn}/detalhes`}>
                       <Button
                         variant="ghost"

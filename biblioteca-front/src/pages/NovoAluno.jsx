@@ -58,7 +58,7 @@ export default function NovoAluno() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold">Novo Aluno</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold">Novo Aluno</h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">
           Preencha os dados do aluno
         </p>

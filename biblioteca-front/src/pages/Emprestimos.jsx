@@ -71,7 +71,7 @@ export default function Emprestimos() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Empréstimos</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">Empréstimos</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link to="/emprestimos/novo">

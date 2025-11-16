@@ -87,7 +87,7 @@ export default function Configuracoes() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl sm:text-3xl font-bold">Configurações</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold">Configurações</h1>
       </div>
 
       {error && (
