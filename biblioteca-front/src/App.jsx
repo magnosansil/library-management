@@ -15,6 +15,8 @@ import NovoAluno from "./pages/NovoAluno";
 import NovoEmprestimo from "./pages/NovoEmprestimo";
 import EditarEmprestimo from "./pages/EditarEmprestimo";
 import Configuracoes from "./pages/Configuracoes";
+import NovaReserva from "./pages/NovaReserva";
+import DetalhesReserva from "./pages/DetalhesReserva";
 
 function App() {
   return (
@@ -36,6 +38,11 @@ function App() {
           />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/reservas" element={<Reservas />} />
+          <Route path="/reservas/nova" element={<NovaReserva />} />
+          <Route
+            path="/reservas/:isbn/detalhes"
+            element={<DetalhesReserva />}
+          />
           <Route path="/devolucoes" element={<Devolucoes />} />
           <Route path="/historico" element={<Historico />} />
           <Route path="/atrasos" element={<Atrasos />} />

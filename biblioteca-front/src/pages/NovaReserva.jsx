@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState, useEffect, useRef } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { API_BASE_URL } from "@/config/api";
 import {
   Card,
@@ -9,16 +9,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
-export default function NovoEmprestimo() {
+export default function NovaReserva() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   const [selectedBook, setSelectedBook] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
-  const [loanDate, setLoanDate] = useState("");
-  const [reservationId, setReservationId] = useState(null);
+  const [reservationDate, setReservationDate] = useState("");
 
   const [bookQuery, setBookQuery] = useState("");
   const [bookResults, setBookResults] = useState([]);
@@ -28,8 +26,6 @@ export default function NovoEmprestimo() {
   const [studentResults, setStudentResults] = useState([]);
   const [showStudentList, setShowStudentList] = useState(false);
 
-  const [availability, setAvailability] = useState(null);
-  const [canBorrow, setCanBorrow] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -66,42 +62,13 @@ export default function NovoEmprestimo() {
           email: s.email || "",
         }));
         setLoaded({ books: true, students: true });
-
-        // Pré-selecionar livro e aluno se vierem via URL params
-        const urlBookIsbn = searchParams.get("bookIsbn");
-        const urlStudentMatricula = searchParams.get("studentMatricula");
-        const urlReservationId = searchParams.get("reservationId");
-
-        if (urlReservationId) {
-          setReservationId(Number(urlReservationId));
-        }
-
-        if (urlBookIsbn && allBooksRef.current.length > 0) {
-          const book = allBooksRef.current.find((b) => b.isbn === urlBookIsbn);
-          if (book) {
-            setSelectedBook({ isbn: book.isbn, title: book.title });
-          }
-        }
-
-        if (urlStudentMatricula && allStudentsRef.current.length > 0) {
-          const student = allStudentsRef.current.find(
-            (s) => s.matricula === urlStudentMatricula
-          );
-          if (student) {
-            setSelectedStudent({
-              matricula: student.matricula,
-              nome: student.nome,
-            });
-          }
-        }
       } catch {}
     })();
     return () => {
       aborted = true;
     };
-  }, [searchParams]);
+  }, []);
 
-  // Filter helpers
   useEffect(() => {
     const q = bookQuery.trim().toLowerCase();
     if (!q) {
@@ -134,48 +101,6 @@ export default function NovoEmprestimo() {
     setStudentResults(results);
   }, [studentQuery]);
 
-  const checkAvailability = useCallback(async () => {
-    if (!selectedBook?.isbn) return;
-    try {
-      const res = await fetch(
-        `${API_BASE_URL}/loans/books/${encodeURIComponent(
-          selectedBook.isbn
-        )}/availability`
-      );
-      const ok = res.ok ? await res.json() : false;
-      setAvailability(!!ok);
-    } catch {
-      setAvailability(false);
-    }
-  }, [selectedBook]);
-
-  const checkCanBorrow = useCallback(async () => {
-    if (!selectedStudent?.matricula) return;
-    try {
-      const res = await fetch(
-        `${API_BASE_URL}/loans/students/${encodeURIComponent(
-          selectedStudent.matricula
-        )}/can-borrow`
-      );
-      const ok = res.ok ? await res.json() : false;
-      setCanBorrow(!!ok);
-    } catch {
-      setCanBorrow(false);
-    }
-  }, [selectedStudent]);
-
-  useEffect(() => {
-    if (selectedBook) {
-      checkAvailability();
-    }
-  }, [selectedBook, checkAvailability]);
-
-  useEffect(() => {
-    if (selectedStudent) {
-      checkCanBorrow();
-    }
-  }, [selectedStudent, checkCanBorrow]);
-
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -184,53 +109,32 @@ export default function NovoEmprestimo() {
       setError("");
       try {
         const body = {
-          studentMatricula: selectedStudent.matricula,
           bookIsbn: selectedBook.isbn,
+          studentMatricula: selectedStudent.matricula,
         };
-        if (loanDate) {
-          body.loanDate = `${loanDate}T00:00:00`;
+        if (reservationDate) {
+          body.reservationDate = `${reservationDate}T00:00:00`;
         }
-        const res = await fetch(`${API_BASE_URL}/loans`, {
+        const res = await fetch(`${API_BASE_URL}/reservations`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
         if (!res.ok) {
           const text = await res.text();
-          throw new Error(text || `Erro ao criar empréstimo (${res.status})`);
+          throw new Error(text || `Erro ao criar reserva (${res.status})`);
         }
-
-        if (reservationId) {
-          try {
-            const fulfillRes = await fetch(
-              `${API_BASE_URL}/reservations/${reservationId}/fulfill`,
-              {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-              }
-            );
-            if (!fulfillRes.ok) {
-              console.warn(
-                `Empréstimo criado, mas não foi possível marcar reserva ${reservationId} como FULFILLED`
-              );
-            }
-          } catch (fulfillErr) {
-            console.warn("Erro ao marcar reserva como FULFILLED:", fulfillErr);
-          }
-        }
-
-        navigate("/emprestimos");
+        navigate("/reservas");
       } catch (err) {
-        setError(err.message || "Erro ao criar empréstimo");
+        setError(err.message || "Erro ao criar reserva");
       } finally {
         setSubmitting(false);
       }
     },
     [
       canSubmit,
-      loanDate,
       navigate,
-      reservationId,
+      reservationDate,
       selectedBook,
       selectedStudent,
       submitting,
@@ -255,9 +159,9 @@ export default function NovoEmprestimo() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold">Novo Empréstimo</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">Nova Reserva</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Registre um novo empréstimo
+          Registre uma nova reserva
         </p>
       </div>
 
@@ -274,42 +178,29 @@ export default function NovoEmprestimo() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Dados do empréstimo</CardTitle>
-          <CardDescription>
-            Selecione o livro, o aluno e a data (opcional)
-          </CardDescription>
+          <CardTitle>Dados da reserva</CardTitle>
+          <CardDescription>Selecione o livro e o aluno</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-2" ref={bookBoxRef}>
               <label className="text-sm font-medium">Livro</label>
-              <div className="relative">
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/60" />
-                    <input
-                      className="w-full h-10 rounded-md border bg-background pl-8 pr-3 text-sm"
-                      placeholder={
-                        loaded.books
-                          ? "Busque por título ou autor"
-                          : "Carregando livros..."
-                      }
-                      value={selectedBook ? `${selectedBook.title}` : bookQuery}
-                      onChange={(e) => {
-                        setSelectedBook(null);
-                        setBookQuery(e.target.value);
-                        setShowBookList(true);
-                        setAvailability(null);
-                      }}
-                    />
-                  </div>
-                  {availability === true && (
-                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                  )}
-                  {availability === false && (
-                    <XCircle className="h-5 w-5 text-rose-600" />
-                  )}
-                </div>
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/60" />
+                <input
+                  className="w-full h-10 rounded-md border bg-background pl-8 pr-3 text-sm"
+                  placeholder={
+                    loaded.books
+                      ? "Busque por título ou autor"
+                      : "Carregando livros..."
+                  }
+                  value={selectedBook ? `${selectedBook.title}` : bookQuery}
+                  onChange={(e) => {
+                    setSelectedBook(null);
+                    setBookQuery(e.target.value);
+                    setShowBookList(true);
+                  }}
+                />
                 {showBookList && bookResults.length > 0 && (
                   <div className="absolute z-10 mt-1 w-full rounded-md border bg-background shadow-sm max-h-56 overflow-auto">
                     {bookResults.map((b) => (
@@ -321,10 +212,6 @@ export default function NovoEmprestimo() {
                           setSelectedBook({ isbn: b.isbn, title: b.title });
                           setBookQuery("");
                           setShowBookList(false);
-                          setAvailability(null);
-                          setTimeout(() => {
-                            checkAvailability();
-                          }, 0);
                         }}
                       >
                         <div className="font-medium">{b.title}</div>
@@ -337,49 +224,28 @@ export default function NovoEmprestimo() {
                   </div>
                 )}
               </div>
-              <button
-                type="button"
-                className="text-xs underline text-foreground/80 self-start"
-                onClick={checkAvailability}
-                disabled={!selectedBook}
-              >
-                Verificar disponibilidade
-              </button>
             </div>
 
             <div className="grid gap-2" ref={studentBoxRef}>
               <label className="text-sm font-medium">Aluno</label>
-              <div className="relative">
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/60" />
-                    <input
-                      className="w-full h-10 rounded-md border bg-background pl-8 pr-3 text-sm"
-                      placeholder={
-                        loaded.students
-                          ? "Busque por nome ou e-mail"
-                          : "Carregando alunos..."
-                      }
-                      value={
-                        selectedStudent
-                          ? `${selectedStudent.nome}`
-                          : studentQuery
-                      }
-                      onChange={(e) => {
-                        setSelectedStudent(null);
-                        setStudentQuery(e.target.value);
-                        setShowStudentList(true);
-                        setCanBorrow(null);
-                      }}
-                    />
-                  </div>
-                  {canBorrow === true && (
-                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                  )}
-                  {canBorrow === false && (
-                    <XCircle className="h-5 w-5 text-rose-600" />
-                  )}
-                </div>
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/60" />
+                <input
+                  className="w-full h-10 rounded-md border bg-background pl-8 pr-3 text-sm"
+                  placeholder={
+                    loaded.students
+                      ? "Busque por nome ou e-mail"
+                      : "Carregando alunos..."
+                  }
+                  value={
+                    selectedStudent ? `${selectedStudent.nome}` : studentQuery
+                  }
+                  onChange={(e) => {
+                    setSelectedStudent(null);
+                    setStudentQuery(e.target.value);
+                    setShowStudentList(true);
+                  }}
+                />
                 {showStudentList && studentResults.length > 0 && (
                   <div className="absolute z-10 mt-1 w-full rounded-md border bg-background shadow-sm max-h-56 overflow-auto">
                     {studentResults.map((s) => (
@@ -394,10 +260,6 @@ export default function NovoEmprestimo() {
                           });
                           setStudentQuery("");
                           setShowStudentList(false);
-                          setCanBorrow(null);
-                          setTimeout(() => {
-                            checkCanBorrow();
-                          }, 0);
                         }}
                       >
                         <div className="font-medium">{s.nome}</div>
@@ -410,26 +272,18 @@ export default function NovoEmprestimo() {
                   </div>
                 )}
               </div>
-              <button
-                type="button"
-                className="text-xs underline text-foreground/80 self-start"
-                onClick={checkCanBorrow}
-                disabled={!selectedStudent}
-              >
-                Verificar permissão de empréstimo
-              </button>
             </div>
 
             <div className="grid gap-2">
               <label className="text-sm font-medium">
-                Data do empréstimo (opcional)
+                Data da reserva (opcional)
               </label>
               <input
                 type="date"
                 className="h-10 rounded-md border bg-background px-3 text-sm"
-                value={loanDate}
+                value={reservationDate}
                 max={new Date().toISOString().slice(0, 10)}
-                onChange={(e) => setLoanDate(e.target.value)}
+                onChange={(e) => setReservationDate(e.target.value)}
               />
             </div>
 
@@ -439,9 +293,9 @@ export default function NovoEmprestimo() {
                 disabled={!canSubmit || submitting}
                 className="bg-primary text-primary-foreground"
               >
-                {submitting ? "Salvando..." : "Registrar empréstimo"}
+                {submitting ? "Salvando..." : "Registrar reserva"}
               </Button>
-              <Link to="/emprestimos">
+              <Link to="/reservas">
                 <Button type="button" variant="secondary">
                   Cancelar
                 </Button>
