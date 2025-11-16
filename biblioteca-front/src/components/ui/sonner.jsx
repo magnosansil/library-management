@@ -20,10 +20,9 @@ const Toaster = ({ ...props }) => {
         loading: <Loader2 className="h-4 w-4 animate-spin" />,
       }}
       style={{
-        "--normal-bg": "var(--color-popover, hsl(var(--popover)))",
-        "--normal-text":
-          "var(--color-popover-foreground, hsl(var(--popover-foreground)))",
-        "--normal-border": "var(--color-border, hsl(var(--border)))",
+        "--normal-bg": "white",
+        "--normal-text": "var(--color-foreground, oklch(9% 0 0))",
+        "--normal-border": "var(--color-border, oklch(90% 0 0))",
         "--border-radius": "var(--radius)",
       }}
       {...props}
