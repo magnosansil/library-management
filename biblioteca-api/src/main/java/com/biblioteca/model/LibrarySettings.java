@@ -3,9 +3,6 @@ package com.biblioteca.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Configurações globais da biblioteca
@@ -13,13 +10,9 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "library_settings")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class LibrarySettings {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id = 1L; // Sempre ID 1 para garantir singleton
 
   /**
@@ -46,6 +39,49 @@ public class LibrarySettings {
   @Min(value = 0, message = "Multa por dia não pode ser negativa")
   @Column(name = "fine_per_day", nullable = false)
   private Integer finePerDay = 100; // Padrão: 100 (centavos ou unidade mínima)
+
+  // Constructors
+  public LibrarySettings() {
+  }
+
+  public LibrarySettings(Integer loanPeriodDays, Integer maxLoansPerStudent, Integer finePerDay) {
+    this.loanPeriodDays = loanPeriodDays;
+    this.maxLoansPerStudent = maxLoansPerStudent;
+    this.finePerDay = finePerDay;
+  }
+
+  // Getters and Setters
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Integer getLoanPeriodDays() {
+    return loanPeriodDays;
+  }
+
+  public void setLoanPeriodDays(Integer loanPeriodDays) {
+    this.loanPeriodDays = loanPeriodDays;
+  }
+
+  public Integer getMaxLoansPerStudent() {
+    return maxLoansPerStudent;
+  }
+
+  public void setMaxLoansPerStudent(Integer maxLoansPerStudent) {
+    this.maxLoansPerStudent = maxLoansPerStudent;
+  }
+
+  public Integer getFinePerDay() {
+    return finePerDay;
+  }
+
+  public void setFinePerDay(Integer finePerDay) {
+    this.finePerDay = finePerDay;
+  }
 
   /**
    * Garantir que sempre existe apenas uma instância

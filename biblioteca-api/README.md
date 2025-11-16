@@ -27,8 +27,8 @@ Este projeto implementa uma **Fila de Reservas** para gerenciar reservas de livr
 - **Spring Boot 3.2.0**
 - **Spring Data JPA**
 - **PostgreSQL**
-- **Maven**
-- **Lombok**
+- **Maven 3.9.8**
+- **Manual Getter/Setters**
 
 ## 📦 Pré-requisitos
 

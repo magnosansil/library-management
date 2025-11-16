@@ -6,9 +6,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,9 +13,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "students")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Student {
   @Id
   @NotBlank(message = "Matrícula é obrigatória")
@@ -60,4 +54,92 @@ public class Student {
    */
   @Column(name = "reservations_count", nullable = false)
   private Integer reservationsCount = 0;
+
+  // Constructors
+  public Student() {
+  }
+
+  public Student(String matricula, String nome, String cpf, LocalDate dataNascimento, String email,
+                 String telefone, Integer reservationsCount) {
+    this.matricula = matricula;
+    this.nome = nome;
+    this.cpf = cpf;
+    this.dataNascimento = dataNascimento;
+    this.email = email;
+    this.telefone = telefone;
+    this.reservationsCount = reservationsCount;
+  }
+
+  // Getters and Setters
+  public String getMatricula() {
+    return matricula;
+  }
+
+  public void setMatricula(String matricula) {
+    this.matricula = matricula;
+  }
+
+  public String getNome() {
+    return nome;
+  }
+
+  public void setNome(String nome) {
+    this.nome = nome;
+  }
+
+  public String getCpf() {
+    return cpf;
+  }
+
+  public void setCpf(String cpf) {
+    this.cpf = cpf;
+  }
+
+  public LocalDate getDataNascimento() {
+    return dataNascimento;
+  }
+
+  public void setDataNascimento(LocalDate dataNascimento) {
+    this.dataNascimento = dataNascimento;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getTelefone() {
+    return telefone;
+  }
+
+  public void setTelefone(String telefone) {
+    this.telefone = telefone;
+  }
+
+  public List<Loan> getLoans() {
+    return loans;
+  }
+
+  public void setLoans(List<Loan> loans) {
+    this.loans = loans;
+  }
+
+  public List<Reservation> getReservations() {
+    return reservations;
+  }
+
+  public void setReservations(List<Reservation> reservations) {
+    this.reservations = reservations;
+  }
+
+  public Integer getReservationsCount() {
+    return reservationsCount;
+  }
+
+  public void setReservationsCount(Integer reservationsCount) {
+    this.reservationsCount = reservationsCount;
+  }
 }
