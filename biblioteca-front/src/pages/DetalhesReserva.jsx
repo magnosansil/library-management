@@ -31,6 +31,7 @@ export default function DetalhesReserva() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [notifyingId, setNotifyingId] = useState(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -61,6 +62,7 @@ export default function DetalhesReserva() {
 
   const handleNotify = useCallback(async (reservationId) => {
     try {
+      setNotifyingId(reservationId);
       setError("");
       setSuccess("");
       const res = await fetch(
@@ -78,6 +80,8 @@ export default function DetalhesReserva() {
       setSuccess("Notificação enviada com sucesso");
     } catch (e) {
       setError(e.message || "Erro ao enviar notificação");
+    } finally {
+      setNotifyingId(null);
     }
   }, []);
 
@@ -272,9 +276,19 @@ export default function DetalhesReserva() {
                         size="sm"
                         variant="outline"
                         onClick={() => handleNotify(reservation.id)}
+                        disabled={notifyingId !== null}
                         className="gap-1"
                       >
-                        <Mail className="h-3 w-3" /> Notificar
+                        {notifyingId === reservation.id ? (
+                          <>
+                            <div className="h-3 w-3 border-2 border-foreground/60 border-t-foreground rounded-full animate-spin" />{" "}
+                            Enviando...
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="h-3 w-3" /> Notificar
+                          </>
+                        )}
                       </Button>
                       <Button
                         size="sm"
