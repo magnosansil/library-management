@@ -10,9 +10,19 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Save, Trash2 } from "lucide-react";
-
-const API_BASE_URL = "http://localhost:8080/api";
+import { Save, Trash2 } from "lucide-react";
+import { API_BASE_URL } from "@/config/api";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function EdicaoLivro() {
   const navigate = useNavigate();
@@ -68,6 +78,24 @@ export default function EdicaoLivro() {
     }));
   };
 
+  const requestDelete = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/books/${isbn}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        navigate("/acervo");
+      } else {
+        const error = await response.text();
+        alert(`Erro ao excluir livro: ${error}`);
+      }
+    } catch (error) {
+      console.error("Erro ao excluir livro:", error);
+      alert("Erro ao excluir livro. Verifique se a API está rodando.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -95,28 +123,6 @@ export default function EdicaoLivro() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm("Tem certeza que deseja excluir este livro?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/books/${isbn}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        navigate("/acervo");
-      } else {
-        const error = await response.text();
-        alert(`Erro ao excluir livro: ${error}`);
-      }
-    } catch (error) {
-      console.error("Erro ao excluir livro:", error);
-      alert("Erro ao excluir livro. Verifique se a API está rodando.");
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -128,9 +134,6 @@ export default function EdicaoLivro() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/acervo")}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Editar Livro</h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
@@ -143,34 +146,20 @@ export default function EdicaoLivro() {
         <CardHeader>
           <CardTitle>Informações do Livro</CardTitle>
           <CardDescription>
-            ISBN: {formData.isbn} (não pode ser alterado)
+            Altere os campos e salve as alterações
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="isbn">ISBN</Label>
-                <Input
-                  id="isbn"
-                  name="isbn"
-                  value={formData.isbn}
-                  disabled
-                  className="bg-muted"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="quantity">Quantidade *</Label>
-                <Input
-                  id="quantity"
-                  name="quantity"
-                  type="number"
-                  min="0"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="isbn">ISBN</Label>
+              <Input
+                id="isbn"
+                name="isbn"
+                value={formData.isbn}
+                disabled
+                className="bg-muted rounded-md"
+              />
             </div>
 
             <div className="space-y-2">
@@ -180,7 +169,9 @@ export default function EdicaoLivro() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
+                placeholder="Inserir nome do livro"
                 required
+                className="rounded-md"
               />
             </div>
 
@@ -191,7 +182,9 @@ export default function EdicaoLivro() {
                 name="author"
                 value={formData.author}
                 onChange={handleChange}
+                placeholder="Inserir nome do autor (a)"
                 required
+                className="rounded-md"
               />
             </div>
 
@@ -203,6 +196,23 @@ export default function EdicaoLivro() {
                 type="url"
                 value={formData.coverImageUrl}
                 onChange={handleChange}
+                placeholder="https://exemplo.com/capa.jpg"
+                className="rounded-md"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="quantity">Quantidade *</Label>
+              <Input
+                id="quantity"
+                name="quantity"
+                type="number"
+                min="0"
+                value={formData.quantity}
+                onChange={handleChange}
+                placeholder="Inserir qtd"
+                required
+                className="rounded-md"
               />
             </div>
 
@@ -213,6 +223,8 @@ export default function EdicaoLivro() {
                 name="keywords"
                 value={formData.keywords}
                 onChange={handleChange}
+                placeholder="Inserir palavras-chave"
+                className="rounded-md"
               />
             </div>
 
@@ -225,19 +237,39 @@ export default function EdicaoLivro() {
                 onChange={handleChange}
                 rows="4"
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="Inserir sinopse"
               />
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-between">
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={handleDelete}
-                className="w-full sm:w-auto"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Excluir Livro
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="w-full sm:w-auto"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Excluir Livro
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita. O livro será removido do
+                      acervo.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={requestDelete}>
+                      Excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   type="button"
