@@ -17,6 +17,13 @@ API REST para gerenciamento de biblioteca desenvolvida em Java com Spring Boot. 
 - ✅ Sistema de reservas com fila ordenada (máximo 5 por livro)
 - ✅ Sistema de notificações por e-mail (livros em atraso e reservas disponíveis)
 
+### Relatórios e Análises (NOVOS)
+
+- ✅ **Relatório de Disponibilidade do Acervo**: Análise de títulos disponíveis, indisponíveis e percentual de disponibilidade
+- ✅ **Relatório de Métricas de Alunos**: Estatísticas sobre alunos com empréstimos ativos/atrasados e médias
+- ✅ **Relatório de Estatísticas de Empréstimos**: Análise completa de empréstimos por status, multas coletadas e duração média
+- ✅ **Relatório de Análise de Reservas**: Padrões de reservas, taxa de efetivação, fila média e livros com fila cheia
+
 ## 🏗️ Estruturas de Dados Aplicadas
 
 Este projeto implementa uma **Fila de Reservas** para gerenciar reservas de livros, onde cada livro pode ter até 5 reservas ordenadas. Quando uma reserva é cancelada ou efetivada, a fila é reorganizada automaticamente.
@@ -27,8 +34,8 @@ Este projeto implementa uma **Fila de Reservas** para gerenciar reservas de livr
 - **Spring Boot 3.2.0**
 - **Spring Data JPA**
 - **PostgreSQL**
-- **Maven**
-- **Lombok**
+- **Maven 3.9.8**
+- **Manual Getter/Setters**
 
 ## 📦 Pré-requisitos
 
@@ -247,6 +254,15 @@ A API estará disponível em: `http://localhost:8080`
 | POST   | `/api/notifications/overdue`               | Enviar notificação de livro em atraso por e-mail    |
 | POST   | `/api/notifications/reservation-available` | Enviar notificação de reserva disponível por e-mail |
 
+### Relatórios
+
+| Método | Endpoint                            | Descrição                                                              |
+| ------ | ----------------------------------- | ---------------------------------------------------------------------- |
+| GET    | `/api/reports/availability`         | Relatório de Disponibilidade do Acervo                                 |
+| GET    | `/api/reports/student-metrics`      | Relatório de Métricas de Alunos                                        |
+| GET    | `/api/reports/loan-statistics`      | Relatório de Estatísticas de Empréstimos                               |
+| GET    | `/api/reports/reservation-analytics` | Relatório de Análise de Reservas                                       |
+
 ### Livros
 
 | Método | Endpoint                           | Descrição                           |
@@ -349,6 +365,92 @@ curl -X POST http://localhost:8080/api/notifications/overdue \
 curl -X POST http://localhost:8080/api/notifications/reservation-available \
   -H "Content-Type: application/json" \
   -d '{"reservationId": 1}'
+```
+
+### Gerar Relatório de Disponibilidade do Acervo
+
+```bash
+# Retorna estatísticas sobre títulos disponíveis, total de cópias, etc.
+curl http://localhost:8080/api/reports/availability
+```
+
+**Resposta de Exemplo:**
+```json
+{
+  "totalBooks": 50,
+  "availableBooks": 45,
+  "unavailableBooks": 5,
+  "availabilityPercentage": 90.0,
+  "totalCopiesInStock": 250,
+  "totalCopiesAvailable": 230
+}
+```
+
+### Gerar Relatório de Métricas de Alunos
+
+```bash
+# Retorna estatísticas sobre alunos e seus empréstimos
+curl http://localhost:8080/api/reports/student-metrics
+```
+
+**Resposta de Exemplo:**
+```json
+{
+  "totalStudents": 100,
+  "studentsWithActiveLoans": 75,
+  "studentsWithOverdueLoans": 8,
+  "studentsWithoutLoans": 17,
+  "averageLoansPerStudent": 2.1,
+  "averageOverdueDaysPerStudent": 0.56,
+  "totalActiveLoans": 158,
+  "totalOverdueLoans": 12
+}
+```
+
+### Gerar Relatório de Estatísticas de Empréstimos
+
+```bash
+# Retorna análise completa de empréstimos incluindo multas
+curl http://localhost:8080/api/reports/loan-statistics
+```
+
+**Resposta de Exemplo:**
+```json
+{
+  "totalLoans": 500,
+  "activeLoans": 158,
+  "returnedLoans": 320,
+  "overdueLoans": 22,
+  "activeLoansPercentage": 31.6,
+  "returnedLoansPercentage": 64.0,
+  "overdueLoansPercentage": 4.4,
+  "averageOverdueValue": 245.5,
+  "totalFinesCollected": 78560,
+  "averageLoanDurationDays": 13.2
+}
+```
+
+### Gerar Relatório de Análise de Reservas
+
+```bash
+# Retorna análise de padrões de reservas
+curl http://localhost:8080/api/reports/reservation-analytics
+```
+
+**Resposta de Exemplo:**
+```json
+{
+  "totalReservations": 85,
+  "activeReservations": 45,
+  "fulfilledReservations": 35,
+  "cancelledReservations": 5,
+  "fulfillmentRate": 41.18,
+  "averageQueuePosition": 2.3,
+  "booksWithReservations": 22,
+  "booksWithFullQueue": 3,
+  "averageWaitTimeInDays": 8.5,
+  "studentsWithReservations": 40
+}
 ```
 
 ## 🗄️ Estrutura do Banco de Dados

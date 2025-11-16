@@ -20,6 +20,7 @@ public class LinkedList<T> implements Listable<T> {
   @Override
   public void insert(Object data, int LogicIndex) {
     int index = LogicIndex;
+    @SuppressWarnings("unchecked")
     T typedData = (T) data;
     if (isFull()) {
       throw new OverflowException("Lista cheia!");
@@ -50,6 +51,7 @@ public class LinkedList<T> implements Listable<T> {
     numberElements++;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void append(Object data) {
     if (isFull()) {
@@ -94,6 +96,7 @@ public class LinkedList<T> implements Listable<T> {
     return buffer;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void update(Object data, int LogicIndex) {
     if (isEmpty()) {

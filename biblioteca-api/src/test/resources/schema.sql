@@ -1,0 +1,3 @@
+-- Schema criado automaticamente pelo Hibernate via spring.jpa.hibernate.ddl-auto=create-drop
+-- Este arquivo será deixado vazio pois o Hibernate cuida da criação
+-- Se precisar adicionar dados customizados, use data.sql

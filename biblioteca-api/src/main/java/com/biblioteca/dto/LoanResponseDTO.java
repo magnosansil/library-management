@@ -1,15 +1,9 @@
 package com.biblioteca.dto;
 
 import com.biblioteca.model.Loan;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class LoanResponseDTO {
   private Long id;
   private String studentMatricula;
