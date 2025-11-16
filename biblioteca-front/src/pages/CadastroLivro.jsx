@@ -10,9 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Save } from "lucide-react";
-
-const API_BASE_URL = "http://localhost:8080/api";
+import { Save } from "lucide-react";
+import { API_BASE_URL } from "@/config/api";
 
 export default function CadastroLivro() {
   const navigate = useNavigate();
@@ -64,16 +63,11 @@ export default function CadastroLivro() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/acervo")}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">
-            Cadastrar Novo Livro
-          </h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Novo Livro</h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
-            Adicione um novo livro ao acervo da biblioteca
+            Preencha os dados do novo livro do acervo
           </p>
         </div>
       </div>
@@ -81,38 +75,22 @@ export default function CadastroLivro() {
       <Card>
         <CardHeader>
           <CardTitle>Informações do Livro</CardTitle>
-          <CardDescription>
-            Preencha os dados do livro que deseja cadastrar
-          </CardDescription>
+          <CardDescription>Campos obrigatórios marcados com *</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="isbn">ISBN *</Label>
-                <Input
-                  id="isbn"
-                  name="isbn"
-                  value={formData.isbn}
-                  onChange={handleChange}
-                  placeholder="978-8535914093"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="quantity">Quantidade *</Label>
-                <Input
-                  id="quantity"
-                  name="quantity"
-                  type="number"
-                  min="0"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="isbn">ISBN *</Label>
+              <Input
+                id="isbn"
+                name="isbn"
+                value={formData.isbn}
+                onChange={handleChange}
+                placeholder="000-0000000000"
+                required
+                className="rounded-md"
+              />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="title">Título *</Label>
               <Input
@@ -120,8 +98,9 @@ export default function CadastroLivro() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Dom Casmurro"
+                placeholder="Inserir nome do livro"
                 required
+                className="rounded-md"
               />
             </div>
 
@@ -132,20 +111,37 @@ export default function CadastroLivro() {
                 name="author"
                 value={formData.author}
                 onChange={handleChange}
-                placeholder="Machado de Assis"
+                placeholder="Inserir nome do autor (a)"
                 required
+                className="rounded-md"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="coverImageUrl">URL da Capa</Label>
+              <Label htmlFor="coverImageUrl">URL da capa</Label>
               <Input
                 id="coverImageUrl"
                 name="coverImageUrl"
                 type="url"
                 value={formData.coverImageUrl}
                 onChange={handleChange}
-                placeholder="https://example.com/capa.jpg"
+                placeholder="https://exemplo.com/capa.jpg"
+                className="rounded-md"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="quantity">Quantidade *</Label>
+              <Input
+                id="quantity"
+                name="quantity"
+                type="number"
+                min="0"
+                value={formData.quantity}
+                onChange={handleChange}
+                placeholder="Inserir qtd"
+                className="rounded-md"
+                required
               />
             </div>
 
@@ -156,7 +152,8 @@ export default function CadastroLivro() {
                 name="keywords"
                 value={formData.keywords}
                 onChange={handleChange}
-                placeholder="literatura brasileira, romance, século XIX"
+                placeholder="Inserir palavras-chave"
+                className="rounded-md"
               />
             </div>
 
@@ -169,7 +166,7 @@ export default function CadastroLivro() {
                 onChange={handleChange}
                 rows="4"
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="Breve descrição do livro..."
+                placeholder="Inserir sinopse"
               />
             </div>
 
@@ -192,7 +189,7 @@ export default function CadastroLivro() {
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    Salvar Livro
+                    Salvar livro
                   </>
                 )}
               </Button>
