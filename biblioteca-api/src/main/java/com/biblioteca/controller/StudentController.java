@@ -44,7 +44,21 @@ public class StudentController {
           .body(null);
     }
 
-    Student savedStudent = studentRepository.save(student);
+    if (student.getEmail() != null && studentRepository.findByEmail(student.getEmail()).isPresent()) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    Student savedStudent = new Student(
+        student.getMatricula(),
+        student.getNome(),
+        student.getCpf(),
+        student.getDataNascimento(),
+        student.getEmail(),
+        student.getTelefone(),
+        null,
+        null,
+        0);
+    savedStudent = studentRepository.save(savedStudent);
     return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
   }
 
@@ -80,7 +94,27 @@ public class StudentController {
           continue;
         }
 
-        Student savedStudent = studentRepository.save(student);
+        // Verificar se já existe aluno com esse e-mail
+        if (student.getEmail() != null && studentRepository.findByEmail(student.getEmail()).isPresent()) {
+          Map<String, String> error = new HashMap<>();
+          error.put("matricula", student.getMatricula());
+          error.put("nome", student.getNome());
+          error.put("message", "Aluno com este e-mail já existe");
+          errors.add(error);
+          continue;
+        }
+
+        Student savedStudent = new Student(
+            student.getMatricula(),
+            student.getNome(),
+            student.getCpf(),
+            student.getDataNascimento(),
+            student.getEmail(),
+            student.getTelefone(),
+            null,
+            null,
+            0);
+        savedStudent = studentRepository.save(savedStudent);
         savedStudents.add(savedStudent);
       } catch (Exception e) {
         Map<String, String> error = new HashMap<>();
@@ -136,17 +170,28 @@ public class StudentController {
   public ResponseEntity<Student> updateStudent(@PathVariable String matricula,
       @Valid @RequestBody Student studentDetails) {
     Optional<Student> optionalStudent = studentRepository.findById(matricula);
-    if (optionalStudent.isPresent()) {
-      Student student = optionalStudent.get();
-      // Não permite alterar a matrícula (chave primária)
-      student.setNome(studentDetails.getNome());
-      student.setCpf(studentDetails.getCpf());
-      student.setDataNascimento(studentDetails.getDataNascimento());
-
-      Student updatedStudent = studentRepository.save(student);
-      return ResponseEntity.ok(updatedStudent);
+    if (optionalStudent.isEmpty()) {
+      return ResponseEntity.notFound().build();
     }
-    return ResponseEntity.notFound().build();
+
+    // Se for trocar e-mail, validar que não existe em outro aluno
+    if (studentDetails.getEmail() != null) {
+      Optional<Student> existingEmail = studentRepository.findByEmail(studentDetails.getEmail());
+      if (existingEmail.isPresent() && !existingEmail.get().getMatricula().equals(matricula)) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+      }
+    }
+
+    Student student = optionalStudent.get();
+    // Não permite alterar a matrícula (chave primária)
+    student.setNome(studentDetails.getNome());
+    student.setCpf(studentDetails.getCpf());
+    student.setDataNascimento(studentDetails.getDataNascimento());
+    student.setEmail(studentDetails.getEmail());
+    student.setTelefone(studentDetails.getTelefone());
+
+    Student updatedStudent = studentRepository.save(student);
+    return ResponseEntity.ok(updatedStudent);
   }
 
   /**

@@ -14,6 +14,8 @@ public interface StudentRepository extends JpaRepository<Student, String> {
 
   Optional<Student> findByMatricula(String matricula);
 
+  Optional<Student> findByEmail(String email);
+
   @Query("SELECT COUNT(l) FROM Loan l WHERE l.student.matricula = :matricula AND l.status = 'ACTIVE'")
   Long countActiveLoansByMatricula(@Param("matricula") String matricula);
 }
