@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, Edit, BookOpen } from "lucide-react";
 import { API_BASE_URL } from "@/config/api";

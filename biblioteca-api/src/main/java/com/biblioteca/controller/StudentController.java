@@ -44,7 +44,25 @@ public class StudentController {
           .body(null);
     }
 
-    Student savedStudent = studentRepository.save(student);
+    String email = student.getEmail();
+    if (email != null && !email.trim().isEmpty()) {
+      email = email.trim().toLowerCase();
+      if (studentRepository.findByEmail(email).isPresent()) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+      }
+    }
+
+    Student savedStudent = new Student(
+        student.getMatricula(),
+        student.getNome(),
+        student.getCpf(),
+        student.getDataNascimento(),
+        email,
+        student.getTelefone(),
+        null,
+        null,
+        0);
+    savedStudent = studentRepository.save(savedStudent);
     return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
   }
 
@@ -80,7 +98,32 @@ public class StudentController {
           continue;
         }
 
-        Student savedStudent = studentRepository.save(student);
+        // Normalizar email para lowercase e verificar se já existe aluno com esse
+        // e-mail
+        String email = student.getEmail();
+        if (email != null && !email.trim().isEmpty()) {
+          email = email.trim().toLowerCase();
+          if (studentRepository.findByEmail(email).isPresent()) {
+            Map<String, String> error = new HashMap<>();
+            error.put("matricula", student.getMatricula());
+            error.put("nome", student.getNome());
+            error.put("message", "Aluno com este e-mail já existe");
+            errors.add(error);
+            continue;
+          }
+        }
+
+        Student savedStudent = new Student(
+            student.getMatricula(),
+            student.getNome(),
+            student.getCpf(),
+            student.getDataNascimento(),
+            email,
+            student.getTelefone(),
+            null,
+            null,
+            0);
+        savedStudent = studentRepository.save(savedStudent);
         savedStudents.add(savedStudent);
       } catch (Exception e) {
         Map<String, String> error = new HashMap<>();
@@ -133,20 +176,50 @@ public class StudentController {
    * PUT /api/students/{matricula}
    */
   @PutMapping("/{matricula}")
-  public ResponseEntity<Student> updateStudent(@PathVariable String matricula,
+  public ResponseEntity<?> updateStudent(@PathVariable String matricula,
       @Valid @RequestBody Student studentDetails) {
     Optional<Student> optionalStudent = studentRepository.findById(matricula);
-    if (optionalStudent.isPresent()) {
-      Student student = optionalStudent.get();
-      // Não permite alterar a matrícula (chave primária)
-      student.setNome(studentDetails.getNome());
-      student.setCpf(studentDetails.getCpf());
-      student.setDataNascimento(studentDetails.getDataNascimento());
+    if (optionalStudent.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body("Aluno não encontrado");
+    }
 
+    Student student = optionalStudent.get();
+
+    // Normalizar email para lowercase antes de validar
+    String newEmail = studentDetails.getEmail();
+    if (newEmail != null && !newEmail.trim().isEmpty()) {
+      newEmail = newEmail.trim().toLowerCase();
+
+      // Verificar se o email está sendo alterado
+      String currentEmail = student.getEmail() != null ? student.getEmail().toLowerCase() : null;
+      if (!newEmail.equals(currentEmail)) {
+        // Se está trocando o email, verificar se já existe em outro aluno
+        Optional<Student> existingEmail = studentRepository.findByEmail(newEmail);
+        if (existingEmail.isPresent() && !existingEmail.get().getMatricula().equals(matricula)) {
+          return ResponseEntity.status(HttpStatus.CONFLICT)
+              .body("E-mail já está em uso por outro aluno");
+        }
+      }
+    } else {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body("E-mail é obrigatório");
+    }
+
+    // Atualizar campos (não permite alterar a matrícula - chave primária)
+    student.setNome(studentDetails.getNome());
+    student.setCpf(studentDetails.getCpf());
+    student.setDataNascimento(studentDetails.getDataNascimento());
+    student.setEmail(newEmail);
+    student.setTelefone(studentDetails.getTelefone());
+
+    try {
       Student updatedStudent = studentRepository.save(student);
       return ResponseEntity.ok(updatedStudent);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Erro ao atualizar aluno: " + e.getMessage());
     }
-    return ResponseEntity.notFound().build();
   }
 
   /**

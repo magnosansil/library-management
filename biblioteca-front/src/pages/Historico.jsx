@@ -1,11 +1,19 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { FileText } from "lucide-react";
 
 export default function Historico() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold">Histórico e Relatórios</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold">
+          Histórico e Relatórios
+        </h1>
         <p className="text-sm sm:text-base text-muted-foreground mt-1">
           Visualize histórico e relatórios do sistema
         </p>
@@ -17,9 +25,7 @@ export default function Historico() {
             <FileText className="h-5 w-5" />
             Histórico e Relatórios
           </CardTitle>
-          <CardDescription>
-            Funcionalidade em desenvolvimento
-          </CardDescription>
+          <CardDescription>Funcionalidade em desenvolvimento</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
@@ -30,4 +36,3 @@ export default function Historico() {
     </div>
   );
 }
-

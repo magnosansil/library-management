@@ -65,7 +65,7 @@ export default function CadastroLivro() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Novo Livro</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">Novo Livro</h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Preencha os dados do novo livro do acervo
           </p>
