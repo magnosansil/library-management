@@ -1,17 +1,30 @@
-import { Link, useLocation } from "react-router-dom";
-import { Home, Search, Users } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Home, Search, Users, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Layout({ children }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
+  const showBack = location.pathname !== "/";
 
   return (
     <div className="min-h-screen bg-background pb-16 mx-auto">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="px-4 max-w-3xl mx-auto">
-          <div className="flex h-14 items-center justify-end">
+          <div className="flex h-14 items-center justify-between">
+            <div className="flex items-center">
+              {showBack && (
+                <button
+                  aria-label="Voltar"
+                  onClick={() => navigate(-1)}
+                  className="flex items-center justify-center h-9 w-9 rounded-full hover:bg-accent text-foreground"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+              )}
+            </div>
             <Link to="/" className="flex items-center gap-2 font-semibold">
               <span className="text-base sm:text-lg">Wisely</span>
               <img
