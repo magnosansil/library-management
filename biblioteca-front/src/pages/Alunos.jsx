@@ -31,6 +31,7 @@ export default function Alunos() {
     telefone: "",
   });
   const [history, setHistory] = useState({ reservations: [], loans: [] });
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -67,6 +68,11 @@ export default function Alunos() {
 
   const openEdit = async (student) => {
     const willOpen = editingMatricula !== student.matricula;
+
+    if (willOpen && editingMatricula !== null) {
+      setHistory({ reservations: [], loans: [] });
+    }
+
     setEditingMatricula(willOpen ? student.matricula : null);
     setEditForm({
       matricula: student.matricula || "",
@@ -76,18 +82,31 @@ export default function Alunos() {
       email: student.email || "",
       telefone: student.telefone || "",
     });
-    if (!willOpen) return;
+
+    if (!willOpen) {
+      setHistory({ reservations: [], loans: [] });
+      return;
+    }
+
     try {
+      setLoadingHistory(true);
       const [resvRes, loanRes] = await Promise.all([
         fetch(`${API_BASE_URL}/reservations/student/${student.matricula}`),
-        fetch(`${API_BASE_URL}/loans/active/student/${student.matricula}`),
+        fetch(`${API_BASE_URL}/loans`),
       ]);
       const reservations = resvRes.ok ? await resvRes.json() : [];
-      const loans = loanRes.ok ? await loanRes.json() : [];
+      const allLoans = loanRes.ok ? await loanRes.json() : [];
+      const loans = allLoans.filter(
+        (loan) =>
+          loan.studentMatricula === student.matricula &&
+          (loan.status === "ACTIVE" || loan.status === "OVERDUE")
+      );
       setHistory({ reservations, loans });
     } catch (e) {
       console.error("Erro ao buscar histórico:", e);
       setHistory({ reservations: [], loans: [] });
+    } finally {
+      setLoadingHistory(false);
     }
   };
 
@@ -99,6 +118,7 @@ export default function Alunos() {
   const cancelEdit = () => {
     setEditingMatricula(null);
     setHistory({ reservations: [], loans: [] });
+    setLoadingHistory(false);
   };
 
   const saveStudent = async () => {
@@ -347,7 +367,11 @@ export default function Alunos() {
                   <div className="space-y-3">
                     <div>
                       <div className="text-sm font-medium mb-1">Reservas</div>
-                      {history.reservations.length === 0 ? (
+                      {loadingHistory ? (
+                        <p className="text-xs text-muted-foreground">
+                          Carregando...
+                        </p>
+                      ) : history.reservations.length === 0 ? (
                         <p className="text-xs text-muted-foreground">
                           Sem reservas
                         </p>
@@ -373,28 +397,47 @@ export default function Alunos() {
                       <div className="text-sm font-medium mb-1">
                         Empréstimos
                       </div>
-                      {history.loans.length === 0 ? (
+                      {loadingHistory ? (
                         <p className="text-xs text-muted-foreground">
-                          Sem empréstimos ativos
+                          Carregando...
+                        </p>
+                      ) : history.loans.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">
+                          Sem empréstimos ativos ou em atraso
                         </p>
                       ) : (
                         <ul className="space-y-1 text-sm">
-                          {history.loans.map((l) => (
-                            <li
-                              key={l.id}
-                              className="flex justify-between border rounded-md px-3 py-2"
-                            >
-                              <span className="truncate mr-2">
-                                {l.bookTitle} • {l.bookIsbn}
-                              </span>
-                              <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                Vence:{" "}
-                                {new Date(l.dueDate).toLocaleDateString(
-                                  "pt-BR"
-                                )}
-                              </span>
-                            </li>
-                          ))}
+                          {history.loans.map((l) => {
+                            const isOverdue = l.status === "OVERDUE";
+                            return (
+                              <li
+                                key={l.id}
+                                className={`flex justify-between border rounded-md px-3 py-2 ${
+                                  isOverdue ? "bg-rose-50 border-rose-300" : ""
+                                }`}
+                              >
+                                <span
+                                  className={`truncate mr-2 ${
+                                    isOverdue ? "text-rose-700 font-medium" : ""
+                                  }`}
+                                >
+                                  {l.bookTitle} • {l.bookIsbn}
+                                </span>
+                                <span
+                                  className={`text-xs whitespace-nowrap ${
+                                    isOverdue
+                                      ? "text-rose-700 font-medium"
+                                      : "text-muted-foreground"
+                                  }`}
+                                >
+                                  {isOverdue ? "⚠️ Em atraso • " : ""}Vence:{" "}
+                                  {new Date(l.dueDate).toLocaleDateString(
+                                    "pt-BR"
+                                  )}
+                                </span>
+                              </li>
+                            );
+                          })}
                         </ul>
                       )}
                     </div>
