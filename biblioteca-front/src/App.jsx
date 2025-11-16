@@ -7,7 +7,7 @@ import EdicaoLivro from "./pages/EdicaoLivro";
 import Alunos from "./pages/Alunos";
 import Emprestimos from "./pages/Emprestimos";
 import Reservas from "./pages/Reservas";
-import Historico from "./pages/Historico";
+import Relatorios from "./pages/Relatorios";
 import Atrasos from "./pages/Atrasos";
 import NovoAluno from "./pages/NovoAluno";
 import NovoEmprestimo from "./pages/NovoEmprestimo";
@@ -41,7 +41,7 @@ function App() {
             path="/reservas/:isbn/detalhes"
             element={<DetalhesReserva />}
           />
-          <Route path="/historico" element={<Historico />} />
+          <Route path="/relatorios" element={<Relatorios />} />
           <Route path="/atrasos" element={<Atrasos />} />
         </Routes>
         <Toaster />

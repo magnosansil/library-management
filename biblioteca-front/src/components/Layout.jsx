@@ -55,10 +55,10 @@ export default function Layout({ children }) {
           </Link>
 
           <Link
-            to="/historico"
+            to="/relatorios"
             className={cn(
               "flex flex-col items-center justify-center gap-1 transition-colors",
-              isActive("/historico")
+              isActive("/relatorios")
                 ? "text-primary"
                 : "text-muted-foreground hover:text-foreground"
             )}
