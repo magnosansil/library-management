@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Search, Users, ArrowLeft } from "lucide-react";
+import { Home, FileText, Users, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Layout({ children }) {
@@ -55,16 +55,16 @@ export default function Layout({ children }) {
           </Link>
 
           <Link
-            to="/busca"
+            to="/historico"
             className={cn(
               "flex flex-col items-center justify-center gap-1 transition-colors",
-              isActive("/busca")
+              isActive("/historico")
                 ? "text-primary"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Search className="h-5 w-5" />
-            <span className="text-xs font-medium">Busca</span>
+            <FileText className="h-5 w-5" />
+            <span className="text-xs font-medium">Relatórios</span>
           </Link>
 
           <Link

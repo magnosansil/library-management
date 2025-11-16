@@ -1,11 +1,5 @@
 import FeatureCard from "@/components/FeatureCard";
-import {
-  BookOpen,
-  ArrowRight,
-  Calendar,
-  FileText,
-  AlertCircle,
-} from "lucide-react";
+import { BookOpen, ArrowRight, Calendar, AlertCircle } from "lucide-react";
 
 export default function Home() {
   const features = [
@@ -29,21 +23,6 @@ export default function Home() {
       title: "Reservas",
       bgColor: "bg-slate-800/40",
       borderColor: "border-slate-700",
-    },
-    {
-      to: "/devolucoes",
-      icon: ArrowRight,
-      title: "Devoluções",
-      bgColor: "bg-purple-900/20",
-      borderColor: "border-purple-700",
-      iconRotate: 180,
-    },
-    {
-      to: "/historico",
-      icon: FileText,
-      title: "Histórico e relatórios",
-      bgColor: "bg-amber-900/20",
-      borderColor: "border-amber-700",
     },
     {
       to: "/atrasos",
