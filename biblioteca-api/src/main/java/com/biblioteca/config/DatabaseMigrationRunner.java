@@ -33,9 +33,7 @@ public class DatabaseMigrationRunner {
 
     // Lista de migrações a serem executadas (em ordem)
     String[] migrations = {
-        "migration-add-fine-system.sql",
-        "migration-add-reservations.sql",
-        "migration-add-student-contact.sql"
+        "migration-add-fine-status.sql"
     };
 
     for (String migrationFile : migrations) {

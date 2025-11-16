@@ -184,4 +184,34 @@ public class LoanController {
     List<LoanResponseDTO> loans = loanService.getActiveAndOverdueLoans();
     return ResponseEntity.ok(loans);
   }
+
+  /**
+   * Marca multa como paga
+   * PUT /api/loans/{loanId}/fine/paid
+   */
+  @PutMapping("/{loanId}/fine/paid")
+  public ResponseEntity<?> markFineAsPaid(@PathVariable Long loanId) {
+    try {
+      LoanResponseDTO loan = loanService.markFineAsPaid(loanId);
+      return ResponseEntity.ok(loan);
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body("Erro ao marcar multa como paga: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Marca multa como perdoada
+   * PUT /api/loans/{loanId}/fine/forgiven
+   */
+  @PutMapping("/{loanId}/fine/forgiven")
+  public ResponseEntity<?> markFineAsForgiven(@PathVariable Long loanId) {
+    try {
+      LoanResponseDTO loan = loanService.markFineAsForgiven(loanId);
+      return ResponseEntity.ok(loan);
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body("Erro ao perdoar multa: " + e.getMessage());
+    }
+  }
 }

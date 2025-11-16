@@ -53,6 +53,17 @@ public class Loan {
   @Column(name = "fine_amount")
   private Integer fineAmount;
 
+  /**
+   * Status da cobrança da multa
+   * PENDING: multa pendente de pagamento
+   * PAID: multa paga
+   * FORGIVEN: multa perdoada
+   * Null se não houver multa
+   */
+  @Enumerated(EnumType.STRING)
+  @Column(name = "fine_status")
+  private FineStatus fineStatus;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
@@ -65,5 +76,11 @@ public class Loan {
     ACTIVE,
     RETURNED,
     OVERDUE
+  }
+
+  public enum FineStatus {
+    PENDING,
+    PAID,
+    FORGIVEN
   }
 }

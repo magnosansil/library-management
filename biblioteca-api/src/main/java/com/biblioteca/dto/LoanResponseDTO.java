@@ -23,6 +23,7 @@ public class LoanResponseDTO {
   private Loan.LoanStatus status;
   private Integer overdueDays;
   private Integer fineAmount;
+  private Loan.FineStatus fineStatus;
 
   public static LoanResponseDTO fromEntity(Loan loan) {
     LoanResponseDTO dto = new LoanResponseDTO();
@@ -38,6 +39,7 @@ public class LoanResponseDTO {
     dto.setStatus(loan.getStatus());
     dto.setOverdueDays(loan.getOverdueDays());
     dto.setFineAmount(loan.getFineAmount());
+    dto.setFineStatus(loan.getFineStatus());
     return dto;
   }
 }

@@ -241,10 +241,13 @@ public class LoanService {
                         // Calcular valor da multa: dias de atraso * multa por dia (das configurações)
                         Integer finePerDay = settingsService.getFinePerDay();
                         loan.setFineAmount((int) daysDifference * finePerDay);
+                        // Definir status da multa como pendente
+                        loan.setFineStatus(Loan.FineStatus.PENDING);
                 } else {
                         // Sem atraso
                         loan.setOverdueDays(0);
                         loan.setFineAmount(0);
+                        loan.setFineStatus(null);
                 }
 
                 // Atualizar estoque do livro
@@ -388,5 +391,45 @@ public class LoanService {
                 return activeAndOverdueLoans.stream()
                                 .map(LoanResponseDTO::fromEntity)
                                 .collect(Collectors.toList());
+        }
+
+        /**
+         * Marca multa como paga
+         * 
+         * @param loanId ID do empréstimo
+         * @return DTO com os dados do empréstimo atualizado
+         */
+        @Transactional
+        public LoanResponseDTO markFineAsPaid(Long loanId) {
+                Loan loan = loanRepository.findById(loanId)
+                                .orElseThrow(() -> new RuntimeException("Empréstimo não encontrado"));
+
+                if (loan.getFineAmount() == null || loan.getFineAmount() == 0) {
+                        throw new RuntimeException("Este empréstimo não possui multa");
+                }
+
+                loan.setFineStatus(Loan.FineStatus.PAID);
+                Loan savedLoan = loanRepository.save(loan);
+                return LoanResponseDTO.fromEntity(savedLoan);
+        }
+
+        /**
+         * Marca multa como perdoada
+         * 
+         * @param loanId ID do empréstimo
+         * @return DTO com os dados do empréstimo atualizado
+         */
+        @Transactional
+        public LoanResponseDTO markFineAsForgiven(Long loanId) {
+                Loan loan = loanRepository.findById(loanId)
+                                .orElseThrow(() -> new RuntimeException("Empréstimo não encontrado"));
+
+                if (loan.getFineAmount() == null || loan.getFineAmount() == 0) {
+                        throw new RuntimeException("Este empréstimo não possui multa");
+                }
+
+                loan.setFineStatus(Loan.FineStatus.FORGIVEN);
+                Loan savedLoan = loanRepository.save(loan);
+                return LoanResponseDTO.fromEntity(savedLoan);
         }
 }
