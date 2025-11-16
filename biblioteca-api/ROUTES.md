@@ -67,6 +67,26 @@ Este arquivo centraliza todas as rotas da API para fácil referência e manuten�
 
 ---
 
+## 📊 Relatórios (`/api/reports`)
+
+| Método | Rota                                | Handler                                         | Descrição                                                           |
+| ------ | ----------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------- |
+| GET    | `/api/reports/availability`         | `ReportController.getAvailabilityReport()`      | Relatório de Disponibilidade do Acervo                              |
+| GET    | `/api/reports/student-metrics`      | `ReportController.getStudentMetricsReport()`    | Relatório de Métricas de Alunos                                     |
+| GET    | `/api/reports/loan-statistics`      | `ReportController.getLoanStatisticsReport()`    | Relatório de Estatísticas de Empréstimos                            |
+| GET    | `/api/reports/reservation-analytics` | `ReportController.getReservationAnalyticsReport()` | Relatório de Análise de Reservas                                    |
+
+**Controller:** `com.biblioteca.controller.ReportController`
+
+**Detalhes dos Relatórios:**
+
+- **Disponibilidade do Acervo**: Total de títulos, disponibilidade por título, total de cópias em estoque e disponíveis
+- **Métricas de Alunos**: Total de alunos, alunos com empréstimos ativos/atrasados, média de empréstimos por aluno
+- **Estatísticas de Empréstimos**: Total de empréstimos por status, percentuais, multas coletadas, duração média
+- **Análise de Reservas**: Total de reservas por status, taxa de efetivação, posição média na fila, livros com fila cheia
+
+---
+
 ## 👥 Alunos (`/api/students`)
 
 | Método | Rota                        | Handler                                     | Descrição                      |
@@ -174,6 +194,16 @@ POST   /api/notifications/overdue                 → sendOverdueNotification(@R
 POST   /api/notifications/reservation-available    → sendReservationAvailableNotification(@RequestBody ReservationAvailableNotificationDTO request)
 ```
 
+### Relatórios
+
+```java
+// Controller: ReportController
+GET    /api/reports/availability                 → getAvailabilityReport()
+GET    /api/reports/student-metrics              → getStudentMetricsReport()
+GET    /api/reports/loan-statistics              → getLoanStatisticsReport()
+GET    /api/reports/reservation-analytics        → getReservationAnalyticsReport()
+```
+
 ### Alunos
 
 ```java
@@ -208,12 +238,13 @@ GET /api/health → health()
 
 ## 📋 Resumo Rápido
 
-**Total de Rotas:** 29
+**Total de Rotas:** 33
 
 - **Livros:** 7 rotas
 - **Empréstimos:** 11 rotas
 - **Reservas:** 7 rotas
 - **Notificações:** 2 rotas
+- **Relatórios:** 4 rotas (NOVOS)
 - **Alunos:** 6 rotas
 - **Configurações:** 2 rotas
 - **Sistema:** 3 rotas

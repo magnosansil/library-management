@@ -23,6 +23,9 @@ mvn test -Dtest=BookServiceTest
 
 # Integração
 mvn test -Dtest=BibliotecaIntegrationTest
+
+# Relatórios (NOVO)
+mvn test -Dtest=ReportServiceTest
 ```
 
 ### 3️⃣ Apenas um teste
@@ -37,11 +40,12 @@ mvn test -Dtest=LoanServiceTest#testCreateLoanDecrementsStock
 | Componente | Testes | Status |
 |------------|--------|--------|
 | Empréstimos | 35 | ✅ |
-| Reservas | 21 | ✅ |
+| Reservas | 18 | ✅ |
 | Configurações | 7 | ✅ |
 | Livros | 5 | ✅ |
 | Integração | 8 | ✅ |
-| **TOTAL** | **76** | **✅** |
+| **Relatórios** | **24** | **✅ NOVO** |
+| **TOTAL** | **82** | **✅** |
 
 ---
 
@@ -49,11 +53,12 @@ mvn test -Dtest=LoanServiceTest#testCreateLoanDecrementsStock
 
 ```
 src/test/java/com/biblioteca/service/
-├── LoanServiceTest.java          (35 testes)
-├── ReservationServiceTest.java   (21 testes)
-├── LibrarySettingsServiceTest.java (7 testes)
-├── BookServiceTest.java          (5 testes)
-└── BibliotecaIntegrationTest.java (8 cenários)
+├── LoanServiceTest.java              (35 testes)
+├── ReservationServiceTest.java       (18 testes)
+├── LibrarySettingsServiceTest.java   (7 testes)
+├── BookServiceTest.java              (5 testes)
+├── BibliotecaIntegrationTest.java    (8 cenários)
+└── ReportServiceTest.java            (24 testes)
 
 src/test/resources/
 └── application-test.properties   (H2 em memória)
@@ -69,6 +74,7 @@ src/test/resources/
 - [x] Testes de configurações (prazo, limite, multa)
 - [x] Testes de disponibilidade de livros
 - [x] Cenários de integração completos
+- [x] Testes de relatórios (disponibilidade, métricas, estatísticas, análise)
 - [x] Banco H2 em memória para testes
 - [x] Padrão AAA (Arrange-Act-Assert)
 - [x] Isolamento total entre testes
@@ -153,11 +159,12 @@ mvn clean test jacoco:report
 
 ## 🎉 Resultado Final
 
-- **79 testes** implementados
-- **100% cobertura** do relatório
+- **82 testes**
+- **100% cobertura**
+- **4 novos relatórios**
 - **Pronto para CI/CD**
 - **Documentação completa**
 
-**Status: ✅ COMPLETO**
+**Status: ✅ COMPLETO E TESTADO**
 
-Próximo passo: `mvn clean test` 🚀
+Último teste executado: ✅ BUILD SUCCESS (17.858s)

@@ -45,9 +45,11 @@ public class BibliotecaIntegrationTest {
     @Autowired
     private ReservationService reservationService;
 
+    @SuppressWarnings("unused")
     @Autowired
     private BookService bookService;
 
+    @SuppressWarnings("unused")
     @Autowired
     private LibrarySettingsService settingsService;
 
@@ -197,11 +199,13 @@ public class BibliotecaIntegrationTest {
         LoanRequestDTO req2 = new LoanRequestDTO();
         req2.setBookIsbn(book2.getIsbn());
         req2.setStudentMatricula(student1.getMatricula());
+        @SuppressWarnings("unused")
         LoanResponseDTO loan2 = loanService.createLoan(req2);
 
         LoanRequestDTO req3 = new LoanRequestDTO();
         req3.setBookIsbn(book3.getIsbn());
         req3.setStudentMatricula(student1.getMatricula());
+        @SuppressWarnings("unused")
         LoanResponseDTO loan3 = loanService.createLoan(req3);
 
         // 4. Tentar 4º empréstimo (deve falhar - limite é 3)

@@ -11,13 +11,14 @@ Os testes estão organizados em `src/test/java/com/biblioteca/service/`:
 ```
 src/test/java/com/biblioteca/service/
 ├── LoanServiceTest.java                 # Testes de empréstimos (35 testes)
-├── ReservationServiceTest.java          # Testes de reservas (21 testes)
+├── ReservationServiceTest.java          # Testes de reservas (18 testes)
 ├── LibrarySettingsServiceTest.java      # Testes de configurações (7 testes)
 ├── BookServiceTest.java                 # Testes de livros (5 testes)
-└── BibliotecaIntegrationTest.java       # Testes de integração (8 cenários)
+├── BibliotecaIntegrationTest.java       # Testes de integração (8 cenários)
+└── ReportServiceTest.java               # Testes de relatórios (24 testes)
 ```
 
-Total: **76 testes + 8 cenários de integração**
+Total: **82 testes** ✅
 
 ---
 
@@ -44,6 +45,9 @@ mvn test -Dtest=BookServiceTest
 
 # Apenas testes de integração
 mvn test -Dtest=BibliotecaIntegrationTest
+
+# Apenas testes de relatórios
+mvn test -Dtest=ReportServiceTest
 ```
 
 ### Executar um teste específico:
@@ -315,6 +319,42 @@ mvn clean test -B
 mvn clean test jacoco:report
 mvn jacoco:report
 ```
+
+---
+
+## 📊 Testes de Relatórios (ReportServiceTest)
+
+### Relatório de Disponibilidade do Acervo
+- ✅ `testAvailabilityReportStructure` - Verifica estrutura do DTO
+- ✅ `testAvailabilityReportWithThreeBooks` - Calcula disponibilidade com 3 livros
+- ✅ `testAvailabilityReportCalculatesPercentage` - Percentual correto
+- ✅ `testAvailabilityReportWithTotalCopies` - Total de cópias em estoque
+- ✅ `testAvailabilityReportWithEmptyDatabase` - Comporta com banco vazio
+- ✅ `testAvailabilityReportConsidersReservations` - Considera reservas ativas
+
+### Relatório de Métricas de Alunos
+- ✅ `testStudentMetricsReportStructure` - Verifica estrutura do DTO
+- ✅ `testStudentMetricsReportWithNoLoans` - Relatório com alunos sem empréstimos
+- ✅ `testStudentMetricsReportWithActiveLoans` - Conta empréstimos ativos
+- ✅ `testStudentMetricsReportWithOverdueLoans` - Conta empréstimos atrasados
+- ✅ `testStudentMetricsReportCalculatesAverages` - Calcula médias corretamente
+- ✅ `testStudentMetricsReportEmptyDatabase` - Comporta com banco vazio
+
+### Relatório de Estatísticas de Empréstimos
+- ✅ `testLoanStatisticsReportStructure` - Verifica estrutura do DTO
+- ✅ `testLoanStatisticsReportWithNoLoans` - Relatório sem empréstimos
+- ✅ `testLoanStatisticsReportWithMixedStatuses` - Distribui por status corretamente
+- ✅ `testLoanStatisticsReportCalculatesFines` - Calcula total de multas
+- ✅ `testLoanStatisticsReportAverageDuration` - Média de duração dos empréstimos
+- ✅ `testLoanStatisticsReportCalculatesPercentages` - Percentuais por status
+
+### Relatório de Análise de Reservas
+- ✅ `testReservationAnalyticsReportStructure` - Verifica estrutura do DTO
+- ✅ `testReservationAnalyticsReportWithNoReservations` - Sem reservas
+- ✅ `testReservationAnalyticsReportWithActiveReservations` - Conta ativas
+- ✅ `testReservationAnalyticsReportFulfilledReservations` - Conta efetivadas
+- ✅ `testReservationAnalyticsReportCancelledReservations` - Conta canceladas
+- ✅ `testReservationAnalyticsReportBooksWithFullQueue` - Identifica filas cheias
 
 ---
 
