@@ -66,8 +66,8 @@ public class Loan {
   }
 
   public Loan(Student student, Book book, LocalDateTime loanDate, LocalDateTime dueDate,
-              LocalDateTime returnDate, LoanStatus status, Integer overdueDays, Integer fineAmount,
-              LocalDateTime createdAt) {
+      LocalDateTime returnDate, LoanStatus status, Integer overdueDays, Integer fineAmount,
+      LocalDateTime createdAt) {
     this.student = student;
     this.book = book;
     this.loanDate = loanDate;
@@ -150,6 +150,14 @@ public class Loan {
 
   public void setFineAmount(Integer fineAmount) {
     this.fineAmount = fineAmount;
+  }
+
+  public FineStatus getFineStatus() {
+    return fineStatus;
+  }
+
+  public void setFineStatus(FineStatus fineStatus) {
+    this.fineStatus = fineStatus;
   }
 
   public LocalDateTime getCreatedAt() {

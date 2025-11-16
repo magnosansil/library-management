@@ -59,8 +59,6 @@ public class StudentController {
         student.getDataNascimento(),
         email,
         student.getTelefone(),
-        null,
-        null,
         0);
     savedStudent = studentRepository.save(savedStudent);
     return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
@@ -120,8 +118,6 @@ public class StudentController {
             student.getDataNascimento(),
             email,
             student.getTelefone(),
-            null,
-            null,
             0);
         savedStudent = studentRepository.save(savedStudent);
         savedStudents.add(savedStudent);
