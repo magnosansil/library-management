@@ -151,7 +151,9 @@ export default function Configuracoes() {
           </div>
 
           <div className="grid gap-2 max-w-xs">
-            <label className="text-sm font-medium">Multa por dia (R$)</label>
+            <label className="text-sm font-medium">
+              Multa por dia de atraso (R$)
+            </label>
             <input
               type="text"
               inputMode="numeric"
