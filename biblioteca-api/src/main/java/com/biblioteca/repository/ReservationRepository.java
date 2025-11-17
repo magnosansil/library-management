@@ -40,4 +40,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
    */
   @Query("SELECT COUNT(r) > 0 FROM Reservation r WHERE r.student.matricula = :matricula AND r.book.isbn = :isbn AND r.status = 'ACTIVE'")
   boolean existsActiveReservationByStudentAndBook(@Param("matricula") String matricula, @Param("isbn") String isbn);
+
+  /**
+   * Conta todas as reservas de um livro (em qualquer status)
+   */
+  @Query("SELECT COUNT(r) FROM Reservation r WHERE r.book.isbn = :isbn")
+  Long countReservationsByBookIsbn(@Param("isbn") String isbn);
 }

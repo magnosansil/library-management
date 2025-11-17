@@ -138,11 +138,18 @@ public class BookManagementController {
     }
 
     @DeleteMapping("/{isbn}")
-    public ResponseEntity<Void> deleteBook(@PathVariable String isbn) {
-        if (bookRepository.existsById(isbn)) {
+    public ResponseEntity<?> deleteBook(@PathVariable String isbn) {
+        try {
+            // Validar se pode deletar (verifica empréstimos e reservas)
+            bookService.validateBookDeletion(isbn);
+
+            // Se passou na validação, pode deletar
             bookRepository.deleteById(isbn);
             return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            // Retornar mensagem de erro se não puder deletar
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 }

@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Save, Trash2 } from "lucide-react";
 import { API_BASE_URL } from "@/config/api";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -85,14 +86,30 @@ export default function EdicaoLivro() {
       });
 
       if (response.ok) {
+        toast.success("Livro excluído com sucesso", {
+          description: "O livro foi removido do acervo.",
+        });
         navigate("/acervo");
       } else {
         const error = await response.text();
-        alert(`Erro ao excluir livro: ${error}`);
+        const errorMessage = error || "Erro ao excluir livro";
+
+        // Se for erro 400 (Bad Request), provavelmente é validação de negócio
+        if (response.status === 400) {
+          toast.error("Não é possível excluir o livro", {
+            description: errorMessage,
+          });
+        } else {
+          toast.error("Erro ao excluir livro", {
+            description: errorMessage,
+          });
+        }
       }
     } catch (error) {
       console.error("Erro ao excluir livro:", error);
-      alert("Erro ao excluir livro. Verifique se a API está rodando.");
+      toast.error("Erro ao excluir livro", {
+        description: "Verifique se a API está rodando e tente novamente.",
+      });
     }
   };
 

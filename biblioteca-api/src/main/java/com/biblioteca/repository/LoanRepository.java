@@ -20,4 +20,10 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     @Query("SELECT l FROM Loan l WHERE l.student.matricula = :matricula AND l.status = 'ACTIVE'")
     List<Loan> findActiveLoansByMatricula(@Param("matricula") String matricula);
+
+    /**
+     * Conta todos os empréstimos de um livro (em qualquer status)
+     */
+    @Query("SELECT COUNT(l) FROM Loan l WHERE l.book.isbn = :isbn")
+    Long countLoansByBookIsbn(@Param("isbn") String isbn);
 }
