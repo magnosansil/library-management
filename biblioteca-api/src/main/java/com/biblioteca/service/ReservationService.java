@@ -16,6 +16,32 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+/**
+ * Serviço responsável pelo gerenciamento de reservas de livros.
+ *
+ * <p>Centraliza as regras de negócio relacionadas à criação, validação,
+ * listagem e controle da fila de reservas. O objetivo deste serviço é
+ * garantir que alunos possam registrar interesse em livros indisponíveis,
+ * respeitando limites e mantendo a ordem correta da fila.</p>
+ *
+ * <p>Principais responsabilidades:</p>
+ * <ul>
+ *     <li>Validar se o livro pode receber novas reservas 
+ *     (máximo definido de {@code MAX_RESERVATIONS_PER_BOOK}).</li>
+ *
+ *     <li>Registrar novas reservas, sempre atribuindo a próxima posição
+ *     disponível na fila.</li>
+ *
+ *     <li>Consultar reservas existentes por aluno, livro ou listagem geral.</li>
+ *
+ *     <li>Fornecer informações estruturadas para os DTOs utilizados no fluxo
+ *     da aplicação.</li>
+ * </ul>
+ *
+ * <p>Este serviço também utiliza operações transacionais para garantir
+ * a consistência das reservas durante o processo de criação e validação.</p>
+ */
 @Service
 public class ReservationService {
 

@@ -1,9 +1,11 @@
 package com.biblioteca.dto;
 
 /**
- * DTO para relatório de análise de reservas
- * Fornece análise de padrões de reservas, fila média e eficácia do sistema
+ * DTO utilizado para análises avançadas de reservas.
+ * Contém métricas como número de reservas realizadas, canceladas,
+ * taxa de atendimento das reservas e indicadores de comportamento dos usuários.
  */
+
 public class ReportReservationAnalyticsDTO {
     private Long totalReservations;
     private Long activeReservations;

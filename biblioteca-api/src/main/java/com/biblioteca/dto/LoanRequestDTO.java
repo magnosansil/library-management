@@ -3,6 +3,13 @@ package com.biblioteca.dto;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+/**
+ * DTO utilizado para requisições de empréstimo de livro.
+ * Deve conter dados necessários para criar um empréstimo, como
+ * id do usuário, id do livro e quantidade solicitada.
+ *
+ * Validações específicas são tratadas na camada de service.
+ */
 
 public class LoanRequestDTO {
   @NotNull(message = "Matrícula do aluno é obrigatória")

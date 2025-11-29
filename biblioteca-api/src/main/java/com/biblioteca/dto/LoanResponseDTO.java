@@ -3,6 +3,11 @@ package com.biblioteca.dto;
 import com.biblioteca.model.Loan;
 
 import java.time.LocalDateTime;
+/**
+ * DTO retornado ao cliente quando um empréstimo é criado ou consultado.
+ * Contém informações como id do empréstimo, datas de início e devolução prevista,
+ * status do empréstimo e detalhes do livro e do usuário.
+ */
 
 public class LoanResponseDTO {
   private Long id;

@@ -5,6 +5,12 @@ import java.time.LocalDateTime;
 /**
  * DTO para requisição de devolução de empréstimo
  */
+/**
+ * DTO usado para requisições de devolução de empréstimos.
+ * Contém as informações necessárias para registrar a devolução,
+ * como id do empréstimo, data de devolução efetiva e observações.
+ */
+
 public class LoanReturnDTO {
   /**
    * Data de devolução (opcional)

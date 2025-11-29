@@ -3,8 +3,11 @@ package com.biblioteca.dto;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * DTO para requisição de notificação de livro em atraso
+ * DTO destinado a notificações de empréstimos atrasados.
+ * Reúne informações sobre o empréstimo, o usuário, a data prevista de devolução
+ * e o número de dias de atraso, permitindo a geração de alertas e avisos.
  */
+
 public class OverdueNotificationDTO {
   @NotNull(message = "ID do empréstimo é obrigatório")
   private Long loanId;

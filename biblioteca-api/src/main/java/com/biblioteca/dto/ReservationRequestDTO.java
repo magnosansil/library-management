@@ -3,10 +3,12 @@ package com.biblioteca.dto;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
-
 /**
- * DTO para requisição de criação de reserva
+ * DTO utilizado para requisições de reserva de livros.
+ * Contém informações necessárias para registrar uma reserva,
+ * como id do usuário, id do livro e data da solicitação.
  */
+
 public class ReservationRequestDTO {
   @NotBlank(message = "ISBN do livro é obrigatório")
   private String bookIsbn;

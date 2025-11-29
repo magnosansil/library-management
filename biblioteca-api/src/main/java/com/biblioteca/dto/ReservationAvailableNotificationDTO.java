@@ -3,8 +3,11 @@ package com.biblioteca.dto;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * DTO para requisição de notificação de livro reservado disponível
+ * DTO utilizado para notificar que um item reservado está disponível.
+ * Inclui informações sobre o usuário, o item, a data de disponibilidade
+ * e o prazo para retirada do material.
  */
+
 public class ReservationAvailableNotificationDTO {
   @NotNull(message = "ID da reserva é obrigatório")
   private Long reservationId;

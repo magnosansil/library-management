@@ -1,4 +1,11 @@
 package com.biblioteca.dto;
+/**
+ * DTO que representa as informações de disponibilidade de um livro.
+ * Contém campos relevantes para exibir se o livro está disponível,
+ * quantidade em estoque e metadados básicos (título, autor, ISBN).
+ *
+ * Usado para transferência de dados entre camadas (service -> controller).
+ */
 
 public class BookAvailabilityDTO {
   private String bookIsbn;

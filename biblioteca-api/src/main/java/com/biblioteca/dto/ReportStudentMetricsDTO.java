@@ -1,9 +1,11 @@
 package com.biblioteca.dto;
 
 /**
- * DTO para relatório de métricas de alunos
- * Fornece estatísticas agregadas sobre atividades dos alunos
+ * DTO que reúne métricas relacionadas aos estudantes.
+ * Pode incluir informações como número de empréstimos por aluno,
+ * média de devolução, histórico de atrasos e engajamento com a biblioteca.
  */
+
 public class ReportStudentMetricsDTO {
     private Long totalStudents;
     private Long studentsWithActiveLoans;

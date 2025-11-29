@@ -9,8 +9,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 /**
- * Serviço para envio de e-mails de notificação
+ * Serviço responsável pelo envio de e-mails e notificações do sistema.
+ * Centraliza a lógica de comunicação com os usuários,
+ * incluindo avisos de atraso, confirmações de reserva e outras mensagens automatizadas.
  */
+
 @Service
 public class EmailService {
 

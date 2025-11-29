@@ -8,6 +8,12 @@ import com.biblioteca.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Serviço responsável pela gestão de livros no sistema.
+ * Realiza operações como cadastro, atualização, exclusão e consulta de livros,
+ * além de lidar com verificações de disponibilidade e lógica de negócio relacionada ao acervo.
+ */
+
 @Service
 public class BookService {
 

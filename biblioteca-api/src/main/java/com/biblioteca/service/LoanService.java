@@ -17,6 +17,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Serviço responsável pela lógica de empréstimos de livros.
+ * Realiza operações como criação de empréstimos, validação de regras,
+ * renovação, devolução e emissão de notificações de atraso.
+ */
+
 @Service
 public class LoanService {
 
