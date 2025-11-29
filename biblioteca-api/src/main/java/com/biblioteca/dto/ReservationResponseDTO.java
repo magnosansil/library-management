@@ -5,8 +5,11 @@ import com.biblioteca.model.Reservation;
 import java.time.LocalDateTime;
 
 /**
- * DTO para resposta de reserva
+ * DTO retornado ao consultar ou registrar uma reserva.
+ * Inclui detalhes como id da reserva, status, datas relevantes,
+ * informações do livro e do usuário associado.
  */
+
 public class ReservationResponseDTO {
   private Long id;
   private String bookIsbn;
