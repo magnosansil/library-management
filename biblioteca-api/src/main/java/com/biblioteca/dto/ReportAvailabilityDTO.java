@@ -1,9 +1,11 @@
 package com.biblioteca.dto;
 
 /**
- * DTO para relatório de disponibilidade do acervo
- * Agrupa livros por estado: disponíveis, indisponíveis e parcialmente disponíveis
+ * DTO utilizado para relatórios de disponibilidade do acervo.
+ * Agrupa métricas como quantidade disponível, total de exemplares,
+ * títulos cadastrados e outras estatísticas relacionadas ao inventário.
  */
+
 public class ReportAvailabilityDTO {
     private Long totalBooks;
     private Long availableBooks;
