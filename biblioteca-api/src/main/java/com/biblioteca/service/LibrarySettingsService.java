@@ -7,8 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Serviço para gerenciar configurações globais da biblioteca
+ * Serviço responsável pela gestão das configurações gerais da biblioteca.
+ * Define e atualiza políticas como prazos de empréstimo,
+ * limites de livros por usuário e demais parâmetros administrativos.
  */
+
 @Service
 public class LibrarySettingsService {
 
