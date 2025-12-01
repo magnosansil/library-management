@@ -1,9 +1,11 @@
 package com.biblioteca.dto;
 
 /**
- * DTO para relatório de estatísticas de empréstimos
- * Fornece análise completa de empréstimos incluindo distribuição por status e métricas
+ * DTO que representa estatísticas gerais de empréstimos.
+ * Pode reunir informações como total de empréstimos realizados,
+ * livros mais emprestados, prazos médios e dados para geração de relatórios.
  */
+
 public class ReportLoanStatisticsDTO {
     private Long totalLoans;
     private Long activeLoans;
