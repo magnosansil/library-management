@@ -1,3 +1,10 @@
+/**
+ * Repositório JPA para a entidade Book.
+ *
+ * <p>Utiliza o ISBN como chave primária (String). Métodos CRUD padrão são
+ * fornecidos por JpaRepository; não é necessário declarar métodos adicionais
+ * para buscar por ISBN, pois {@code findById(isbn)} já está disponível.</p>
+ */
 package com.biblioteca.repository;
 
 import com.biblioteca.model.Book;
